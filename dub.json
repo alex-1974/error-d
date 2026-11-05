@@ -1,0 +1,10 @@
+{
+  "name": "error-d",
+  "description": "Typed result values with explicit ownership and error domains for D",
+  "authors": ["Alexander Bernardi"],
+  "license": "BSL-1.0",
+  "copyright": "Copyright © 2026 Alexander Bernardi",
+  "targetType": "library",
+  "sourcePaths": ["source"],
+  "importPaths": ["source"]
+}

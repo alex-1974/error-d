@@ -17,8 +17,8 @@ Status: accepted. Tracking: #2; implementation #7 and verification #9.
   then transfer it into the destination. A preparation failure leaves the old
   destination intact. Self-copy assignment is allowed; if its copy throws, the
   original is unchanged. Payload assignment overloads are not called.
-- v0.1 supports payloads with `@safe nothrow` destruction. Throwing or `@system`
-  destructors are rejected. This makes replacement cleanup nonthrowing.
+- v0.1 supports payloads with `@safe nothrow` destruction and transfer. Throwing or `@system`
+  destructors/move hooks are rejected. This makes replacement cleanup nonthrowing.
 - `takeValue()` / `takeError()` transfer the active payload and leave the Result
   empty. They are mutable-only, reject wrong branches with the same unconditional
   termination as copy access, and do not return references. Void `takeValue()`

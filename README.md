@@ -1,31 +1,40 @@
 # error-d
 
-A shared, typed result abstraction for D libraries.
+Typed result values for D libraries: a shared success/failure mechanism with
+library-owned error types, explicit ownership and a safe empty default state.
 
-The planned core is `Result!(T, E)`: a common success-or-failure contract,
-with each library defining its own error type.
+```d
+import error_d;
+enum ParseError { invalidDigit }
+alias R = Result!(int, ParseError);
+auto result = R.success(21).map((int n) => n * 2);
+```
 
-## Design goals
+The core supports `Result!(T, E)`, void success, checked copy access, explicit
+extraction, exhaustive matching and error/success composition. `@mustuse` catches
+implicitly discarded results. Empty is neither success nor a domain failure.
 
-- Consistent result handling across library boundaries.
-- Explicit success and failure construction.
-- Correct payload lifetime, copying, and ownership semantics.
-- Preserve `@safe`, `@nogc`, `nothrow`, and `pure` where supported by payloads and operations.
-- Explicit error conversion and lossless composition of error domains.
-- Documented initialization, access, extraction, and thread-transfer contracts.
+See the [API reference](docs/api.md). Read the [user guide](docs/guide.md) for state, ownership, compiler attributes,
+thread and binary-boundary contracts. See [examples](examples/consumer.d) for
+cross-library error composition and [decisions](docs/decisions) for the rationale.
 
-The result container does not provide automatic synchronization or a stable
-cross-language binary interface. Logging and presentation belong to consumers.
+## Build and verification
+
+Tested baselines: DMD 2.111.0 and LDC 1.42.0 on Linux x86_64.
+
+```sh
+dub build --compiler=dmd
+python3 tests/run.py
+```
+
+The full suite needs both compilers, Python 3 and `cc`; select one with
+`python3 tests/run.py --compiler dmd`. It checks debug/release, DIP1000, ownership,
+compile rejection, expected fatal access, threads and D/C library consumers.
 
 ## Status
 
-Design phase. No implementation is available yet.
+Initial implementation under validation. See the
+[milestones](https://github.com/alex-1974/error-d/milestones) and
+[issues](https://github.com/alex-1974/error-d/issues).
 
-[ADR 0001](docs/decisions/0001-result-states-and-access.md) defines states,
-initialization and access: completed success/failure outcomes, an explicit empty
-default state, checked access and `@mustuse`. Ownership operations and storage
-implementation remain to be finalized.
-
-Language probes: `python3 probes/issue-1/run.py` (requires DMD and LDC).
-
-Work is tracked in the [milestones](https://github.com/alex-1974/error-d/milestones).
+License: [BSL-1.0](LICENSE). No DUB registry registration is assumed.

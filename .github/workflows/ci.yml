@@ -1,0 +1,24 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: dmd-2.111.0
+            executable: dmd
+          - compiler: ldc-1.42.0
+            executable: ldc2
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dlang-community/setup-dlang@5d239e99bc553874d9362e7e6aeeac9454b6789f # v2
+        with:
+          compiler: ${{ matrix.compiler }}
+      - run: dub build --compiler=${{ matrix.executable }}
+      - run: python3 tests/run.py --compiler ${{ matrix.executable }}
+      - run: python3 probes/issue-1/run.py --compiler ${{ matrix.executable }}
+      - run: python3 probes/ownership/run.py --compiler ${{ matrix.executable }}

@@ -16,7 +16,7 @@ struct TransportError { int code; }
 struct ParseError { size_t byteOffset; }
 alias ImportError = SumType!(TransportError, ParseError);
 // Result!(Document, ImportError)
-// source.mapError!((ParseError e) => ImportError(e))()
+// source.mapError((ParseError e) => ImportError(e))
 ```
 
 A higher library can instead publish a stable domain wrapper containing an

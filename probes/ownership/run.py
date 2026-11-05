@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+import argparse
 import pathlib
 import subprocess
 import tempfile
 source = pathlib.Path(__file__).with_name('backend.d').resolve()
-for compiler in ('dmd', 'ldc2'):
+parser = argparse.ArgumentParser()
+parser.add_argument('--compiler', action='append', choices=['dmd', 'ldc2'])
+args = parser.parse_args()
+for compiler in args.compiler or ['dmd', 'ldc2']:
     for release in (False, True):
         with tempfile.TemporaryDirectory(prefix='error-d-ownership-') as directory:
             binary = str(pathlib.Path(directory) / 'probe')

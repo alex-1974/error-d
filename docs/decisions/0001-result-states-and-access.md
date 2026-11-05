@@ -75,7 +75,7 @@ enum ResultState { empty, success, failure }
 
     // Named handlers in this order; exactly the active handler runs.
     // Return types must be identical (including all void); no reference returns.
-    auto match(alias onSuccess, alias onFailure, alias onEmpty)();
+    auto match(S, F, N)(scope S onSuccess, scope F onFailure, scope N onEmpty);
 }
 ```
 
@@ -154,19 +154,19 @@ Do not use `if (!result.hasError)` as permission to read `value()`.
 For copyable payloads, exhaustive handling is:
 
 ```d
-result.match!(
+result.match(
     (Document document) { useDocument(document); },
     (ParseError error) { report(error); },
     () { abort(); }
-)();
+);
 
 alias SaveResult = Result!(void, SaveError);
 auto saved = SaveResult.success();
-saved.match!(
+saved.match(
     () { markSaved(); },
     (SaveError error) { report(error); },
     () { abort(); }
-)();
+);
 ```
 
 The application imports its chosen reporting functions and `abort`; these are
@@ -204,3 +204,8 @@ References:
 
 Follow-ups: #2 ownership and borrowing; #3 error composition; #4 backend and
 compiler support; #6 production implementation; #9 attribute and safety tests.
+
+Implementation clarification: callbacks are ordinary scope arguments, not alias
+parameters. Alias callbacks capturing local state produce deprecated dual-context
+functions on the supported DMD baseline. The ordinary argument form supports
+closures without those deprecations and preserves the three-handler contract.
