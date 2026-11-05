@@ -11,3 +11,5 @@ __dummy.html
 *.exe
 *.lst
 core
+
+__pycache__/

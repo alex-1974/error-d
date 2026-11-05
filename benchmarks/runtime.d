@@ -1,0 +1,114 @@
+module benchmark_runtime;
+import kernels;
+import std.stdio : writeln;
+import std.conv : to;
+import std.datetime.stopwatch : StopWatch;
+import core.memory : GC;
+import std.json : JSONValue;
+import core.atomic : atomicStore, MemoryOrder;
+private shared ulong sink;
+
+ulong loop(uint variant)(scope const(uint)[] input,uint threshold,uint batches) @safe nothrow @nogc {
+    ulong checksum;
+    foreach(batch;0..batches) foreach(original;input) {
+        uint x=original ^ (batch * 0x9e3779b9U);
+            static if(variant==0) {
+                auto r=result_small(x,threshold);
+                checksum+=r.hasValue ? r.value() : 0xdeadbeefUL+r.error().code;
+            }
+            else static if(variant==1 || variant==2) {
+                ulong value;DomainError error;
+                bool ok=variant==1 ? status_out_small(x,threshold,value,error) : status_ref_small(x,threshold,value,error);
+                checksum+=ok ? value : 0xdeadbeefUL+error.code;
+            }
+            else static if(variant==3) {
+                auto r=result_large(x,threshold);
+                if(r.hasError) checksum+=0xdeadbeefUL+r.error().code;
+                else {auto value=r.value();checksum+=value.words[0]^value.words[$-1];}
+            }
+            else static if(variant==4 || variant==5) {
+                Block value;DomainError error;
+                bool ok=variant==4 ? status_out_large(x,threshold,value,error) : status_ref_large(x,threshold,value,error);
+                checksum+=ok ? value.words[0]^value.words[$-1] : 0xdeadbeefUL+error.code;
+            }
+            else static if(variant==6) {
+                auto r=pipeline_result(x,threshold);
+                checksum+=r.hasValue ? r.value() : 0xdeadbeefUL+r.error().code;
+            }
+            else static if(variant==7) {
+                ulong value;DomainError error;
+                bool ok=pipeline_status(x,threshold,value,error);
+                checksum+=ok ? value : 0xdeadbeefUL+error.code;
+            }
+    }
+    atomicStore!(MemoryOrder.raw)(sink,checksum);
+    return checksum;
+}
+// One observable atomic store per complete loop keeps timed calls observable.
+// Kernels themselves have no counters or barriers. Dispatch is outside the loop.
+pragma(inline, false)
+ulong measure(uint variant,scope const(uint)[] input,uint threshold,uint batches) @safe nothrow @nogc {
+    switch(variant) {
+        static foreach(index;0..8) {
+            case index: return loop!index(input,threshold,batches);
+        }
+        default: assert(false);
+    }
+}
+
+void main(string[] args) {
+    uint samples=to!uint(args[1]);
+    ulong targetNs=to!ulong(args[2])*1_000_000;
+    uint seed=to!uint(args[3]);
+    uint count=to!uint(args[4]);
+    uint[] input=new uint[count];
+    foreach(ref value;input) {seed^=seed<<13;seed^=seed>>17;seed^=seed<<5;value=seed;}
+    immutable string[] names=["result_small","status_out_small","status_ref_small",
+        "result_large","status_out_large","status_ref_large","pipeline_result","pipeline_status"];
+    GC.disable();scope(exit) GC.enable();
+    foreach(threshold;[0U,3U,128U,256U]) {
+        ulong[][] observations=new ulong[][names.length];
+        ulong[] checksums=new ulong[names.length];
+        // Calibrate within each comparable family. All variants in that family
+        // run identical operation counts, using the slowest warm-up as a bound.
+        ulong[3] slowest;
+        foreach(variant;0..names.length) {
+            StopWatch calibration;calibration.start();
+            auto warm=measure(cast(uint)variant,input,threshold,1);
+            calibration.stop();
+            auto elapsed=cast(ulong)calibration.peek.total!"nsecs";
+            size_t group=variant<3 ? 0 : variant<6 ? 1 : 2;
+            if(elapsed>slowest[group])slowest[group]=elapsed;
+        }
+        uint[3] batchCounts;
+        foreach(group,elapsed;slowest) {
+            uint batches=cast(uint)(targetNs/(elapsed ? elapsed : 1));
+            if(batches<1)batches=1;if(batches>2000)batches=2000;
+            batchCounts[group]=batches;
+        }
+        foreach(variant;0..names.length) {
+            auto group=variant<3 ? 0 : variant<6 ? 1 : 2;
+            checksums[variant]=measure(cast(uint)variant,input,threshold,batchCounts[group]);
+        }
+        foreach(repetition;0..samples) {
+            foreach(offset;0..names.length) {
+                uint variant=cast(uint)((offset+repetition)%names.length);
+                StopWatch watch;watch.start();
+                auto group=variant<3 ? 0 : variant<6 ? 1 : 2;
+                auto checksum=measure(variant,input,threshold,batchCounts[group]);
+                watch.stop();
+                if(checksum!=checksums[variant])throw new Exception("unstable checksum");
+                observations[variant]~=cast(ulong)watch.peek.total!"nsecs";
+            }
+        }
+        foreach(variant,name;names) {
+            JSONValue row;
+            row["kind"]="runtime";row["kernel"]=name;row["threshold"]=threshold;
+            auto group=variant<3 ? 0 : variant<6 ? 1 : 2;
+            row["operations"]=cast(ulong)count*batchCounts[group];
+            row["samples_ns"]=JSONValue(observations[variant]);
+            row["checksum"]=to!string(checksums[variant]);
+            writeln(row.toString());
+        }
+    }
+}

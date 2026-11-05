@@ -1,0 +1,24 @@
+{"revision": "working-tree", "compiler": "dmd", "mode": "debug", "scenario": "reentrancy", "observed": "live=0 error=9"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "debug", "scenario": "postblit", "observed": "copy-success=true live=1 source-error=9\nafter-copy-live=0"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "debug", "scenario": "reference_copy", "observed": "compile rejection: @system"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "debug", "scenario": "destruction", "observed": "SIGABRT"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "debug", "scenario": "destruction_move", "observed": "SIGABRT"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "debug", "scenario": "relocation", "observed": "compile rejection: storable"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "release", "scenario": "reentrancy", "observed": "live=0 error=9"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "release", "scenario": "postblit", "observed": "copy-success=true live=1 source-error=9\nafter-copy-live=0"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "release", "scenario": "reference_copy", "observed": "compile rejection: @system"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "release", "scenario": "destruction", "observed": "SIGABRT"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "release", "scenario": "destruction_move", "observed": "SIGABRT"}
+{"revision": "working-tree", "compiler": "dmd", "mode": "release", "scenario": "relocation", "observed": "compile rejection: storable"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "debug", "scenario": "reentrancy", "observed": "live=0 error=9"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "debug", "scenario": "postblit", "observed": "copy-success=true live=1 source-error=9\nafter-copy-live=0"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "debug", "scenario": "reference_copy", "observed": "compile rejection: @system"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "debug", "scenario": "destruction", "observed": "SIGABRT"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "debug", "scenario": "destruction_move", "observed": "SIGABRT"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "debug", "scenario": "relocation", "observed": "compile rejection: storable"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "release", "scenario": "reentrancy", "observed": "live=0 error=9"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "release", "scenario": "postblit", "observed": "copy-success=true live=1 source-error=9\nafter-copy-live=0"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "release", "scenario": "reference_copy", "observed": "compile rejection: @system"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "release", "scenario": "destruction", "observed": "SIGABRT"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "release", "scenario": "destruction_move", "observed": "SIGABRT"}
+{"revision": "working-tree", "compiler": "ldc2", "mode": "release", "scenario": "relocation", "observed": "compile rejection: storable"}

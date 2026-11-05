@@ -1,0 +1,24 @@
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "debug", "scenario": "reentrancy", "observed": "live=-1 error=1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "debug", "scenario": "postblit", "observed": "copy-success=false live=1 source-error=9\nafter-copy-live=1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "debug", "scenario": "reference_copy", "observed": "length=9 null=true"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "debug", "scenario": "destruction", "observed": "live=-1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "debug", "scenario": "destruction_move", "observed": "live=-1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "debug", "scenario": "relocation", "observed": "invalid-destructions=1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "release", "scenario": "reentrancy", "observed": "live=-1 error=1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "release", "scenario": "postblit", "observed": "copy-success=false live=1 source-error=9\nafter-copy-live=1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "release", "scenario": "reference_copy", "observed": "length=9 null=true"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "release", "scenario": "destruction", "observed": "live=-1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "release", "scenario": "destruction_move", "observed": "live=-1"}
+{"revision": "v0.1.0", "compiler": "dmd", "mode": "release", "scenario": "relocation", "observed": "invalid-destructions=1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "debug", "scenario": "reentrancy", "observed": "live=-1 error=1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "debug", "scenario": "postblit", "observed": "copy-success=false live=1 source-error=9\nafter-copy-live=1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "debug", "scenario": "reference_copy", "observed": "length=9 null=true"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "debug", "scenario": "destruction", "observed": "live=-1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "debug", "scenario": "destruction_move", "observed": "live=-1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "debug", "scenario": "relocation", "observed": "invalid-destructions=1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "release", "scenario": "reentrancy", "observed": "live=-1 error=1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "release", "scenario": "postblit", "observed": "copy-success=false live=1 source-error=9\nafter-copy-live=1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "release", "scenario": "reference_copy", "observed": "length=9 null=true"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "release", "scenario": "destruction", "observed": "live=-1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "release", "scenario": "destruction_move", "observed": "live=-1"}
+{"revision": "v0.1.0", "compiler": "ldc2", "mode": "release", "scenario": "relocation", "observed": "invalid-destructions=1"}

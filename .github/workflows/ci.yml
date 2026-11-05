@@ -22,3 +22,5 @@ jobs:
       - run: python3 tests/run.py --compiler ${{ matrix.executable }}
       - run: python3 probes/issue-1/run.py --compiler ${{ matrix.executable }}
       - run: python3 probes/ownership/run.py --compiler ${{ matrix.executable }}
+      - run: python3 probes/review/run.py --compiler ${{ matrix.executable }}
+      - run: python3 benchmarks/run.py --compiler ${{ matrix.executable }} --samples 1 --target-ms 1 --size 1024 --output /tmp/error-d-benchmark-smoke

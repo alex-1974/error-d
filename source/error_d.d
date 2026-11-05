@@ -5,7 +5,7 @@ import core.attribute : mustuse;
 import core.lifetime : move;
 import core.stdc.stdlib : abort;
 import std.sumtype : SumType, match, get;
-import std.traits : isCopyable, CopyTypeQualifiers, hasElaborateDestructor, functionAttributes, FunctionAttribute;
+import std.traits : isCopyable, CopyTypeQualifiers, hasElaborateDestructor, hasElaborateMove, functionAttributes, FunctionAttribute;
 
 enum ResultState { empty, success, failure }
 
@@ -31,7 +31,19 @@ private template safeTransfer(T)
 
 private template storable(T)
 {
-    enum storable = !is(T == void) && !is(T == function) && safeDestruction!T && safeTransfer!T;
+    enum storable = !is(T == void) && !is(T == function) && safeDestruction!T && safeTransfer!T && !hasElaborateMove!T;
+}
+
+// A reference copy constructor can keep reading its source after arbitrary user
+// code has reentered and replaced the owning variant. Such copies are @system;
+// postblit copies operate on an already-independent destination instead.
+private template referenceCopy(T)
+{
+    static if (__traits(isStaticArray, T))
+        enum referenceCopy = T.length && referenceCopy!(typeof(T.init[0]));
+    else static if (is(T == struct))
+        enum referenceCopy = __traits(hasCopyConstructor, T);
+    else enum referenceCopy = false;
 }
 
 private extern(C) alias Abort = void function() pure nothrow @nogc;
@@ -61,18 +73,63 @@ if ((is(T == void) || storable!T) && storable!E)
     private alias Storage = SumType!(Empty, Good, Bad);
     private Storage storage = Storage.init;
 
+    // Only variants with destructible payloads need a lifetime flag. POD size
+    // and fast paths remain unchanged.
+    static if (hasElaborateDestructor!Storage)
+    {
+        private bool destroying;
+        ~this() @safe pure nothrow @nogc { destroying = true; }
+        // Prevent moving an owner out of its own destructor, including implicit
+        // compiler moves. scope annotations preserve @safe core.lifetime.move
+        // for ordinary owners on the supported compiler baselines.
+        void opPostMove(scope ref const Result old) @safe pure nothrow @nogc
+        {
+            if (destroying || old.destroying) badAccess();
+        }
+    }
+
+    private void requireLive() const @safe pure nothrow @nogc
+    {
+        static if (hasElaborateDestructor!Storage)
+            if (destroying) badAccess();
+    }
+
+    private static auto copyStorage(S)(ref S source)
+    {
+        alias Out = CopyTypeQualifiers!(S, Storage);
+        // Select the branch before user copy code runs. SumType's own copy
+        // constructor reads the source tag after copying, which is not stable
+        // when a postblit callback replaces the source.
+        return source.match!((ref branch) => Out(branch));
+    }
+
     static if (isCopyable!Storage)
-        this(ref Result other) { storage = other.storage; }
+        this(ref Result other)
+        {
+            other.requireLive();
+            static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
+            storage = copyStorage(other.storage);
+        }
     else
         @disable this(ref Result other);
 
     static if (isCopyable!(const Storage))
-        this(ref const Result other) const { storage = other.storage; }
+        this(ref const Result other) const
+        {
+            other.requireLive();
+            static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
+            storage = copyStorage(other.storage);
+        }
     else
         @disable this(ref const Result other) const;
 
     static if (isCopyable!(immutable Storage))
-        this(ref immutable Result other) immutable { storage = other.storage; }
+        this(ref immutable Result other) immutable
+        {
+            other.requireLive();
+            static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
+            storage = copyStorage(other.storage);
+        }
     else
         @disable this(ref immutable Result other) immutable;
 
@@ -100,6 +157,8 @@ if ((is(T == void) || storable!T) && storable!E)
 
     ResultState state() const @safe pure nothrow @nogc
     {
+        static if (hasElaborateDestructor!Storage)
+            if (destroying) return ResultState.empty;
         return storage.match!((ref const x) {
             static if (is(typeof(x) == const(Empty))) return ResultState.empty;
             else static if (is(typeof(x) == const(Good))) return ResultState.success;
@@ -113,6 +172,7 @@ if ((is(T == void) || storable!T) && storable!E)
     /// Non-consuming copy. Const payload indirections stay const.
     auto value(this Self)()
     {
+        requireLive();
         static if (is(T == void))
         {
             if (!hasValue) badAccess();
@@ -121,6 +181,7 @@ if ((is(T == void) || storable!T) && storable!E)
         {
             alias QualifiedGood = CopyTypeQualifiers!(Self, Good);
             alias V = typeof(storage.get!QualifiedGood.payload);
+            static if (referenceCopy!V) cast(void) () @system {}();
             static assert(isCopyable!V, "value requires a copyable payload; use takeValue");
             if (!hasValue) badAccess();
             return storage.get!QualifiedGood.payload;
@@ -128,8 +189,10 @@ if ((is(T == void) || storable!T) && storable!E)
     }
     auto error(this Self)()
     {
+        requireLive();
         alias QualifiedBad = CopyTypeQualifiers!(Self, Bad);
         alias V = typeof(storage.get!QualifiedBad.payload);
+        static if (referenceCopy!V) cast(void) () @system {}();
         static assert(isCopyable!V, "error requires a copyable payload; use takeError");
         if (!hasError) badAccess();
         return storage.get!QualifiedBad.payload;
@@ -138,18 +201,26 @@ if ((is(T == void) || storable!T) && storable!E)
     /// Prepare rhs before touching this; payload opAssign is never called.
     void opAssign(Result rhs)
     {
+        requireLive();
         replace(rhs.storage);
     }
     private void replace(ref Storage prepared) @trusted
     {
-        // No API exposes an alias into private storage. The payload's destructor
-        // is constrained @safe nothrow; this move cannot execute a copy hook.
+        // Detach the old branch, commit the prepared one, then destroy the
+        // retired branch. A destructor may now safely replace this Result:
+        // it sees committed storage and its replacement is not overwritten.
+        auto retired = move(storage);
+        // Explicit reset is necessary when a POD move leaves its source intact.
+        auto empty = Storage.init;
+        move(empty, storage);
         move(prepared, storage);
+        // retired is destroyed here, after commit, never through active storage.
     }
 
     /// Transfer selected payload and leave this result empty.
     auto takeValue()()
     {
+        requireLive();
         if (!hasValue) badAccess();
         static if (is(T == void))
         {
@@ -165,6 +236,7 @@ if ((is(T == void) || storable!T) && storable!E)
     }
     auto takeError()()
     {
+        requireLive();
         if (!hasError) badAccess();
         auto owned = takeStorage();
         static if (is(E == const) || is(E == immutable)) return owned.get!Bad.payload;
