@@ -24,7 +24,10 @@ buffer alias. All success/error data is value-based and the parser compiles
 division in one expression: mapError, andThen, mapError. Both source errors retain
 their original identity/data. The higher function states an explicit return type
 and does not expose an inferred variant accidentally. Tests compile the two
-libraries as independent archives before linking the consumer.
+libraries as independent archives before linking the consumer. It also transfers
+a noncopyable resource from the calculation archive, takes ownership in the
+consumer and checks exactly-once release. The borrowed counter fixture uses
+return/scope annotations, including a scope destructor, under DIP1000.
 
 The common handling removes differing success/status conventions at call sites.
 It does not remove domain mapping: this example still needs two explicit

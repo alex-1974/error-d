@@ -66,6 +66,9 @@ A Result owns its payload object. It does not impose ownership of memory reached
 through slices, pointers or class references. Copies preserve those aliases and
 never silently deep-copy a buffer. Const access retains transitive const.
 Borrowed memory must outlive its use; Result does not extend its lifetime.
+Producers retaining a parameter need the appropriate return/scope relationship;
+payload destructors handling such data may also need scope annotations (see the
+separately built Resource fixture in examples/libraries/calculation.d).
 
 Noncopyable payloads make the whole Result noncopyable. Factories can consume a
 noncopyable temporary or an explicit `move(lvalue)`; extraction uses `takeValue`

@@ -15,6 +15,14 @@ ImportResult calculate(scope const(char)[] text, double denominator) @safe pure 
 }
 void check(bool ok) { if(!ok) abort(); }
 void main() {
+    int live;
+    {
+        auto acquired=acquire(&live);
+        check(live==1);
+        auto resource=acquired.takeValue();
+        check(acquired.isEmpty && live==1);
+    }
+    check(live==0);
     check(calculate("84",2).value()==42);
     auto malformed=calculate("8x",2);
     check(malformed.hasError);

@@ -33,7 +33,7 @@ compile rejection, expected fatal access, threads and D/C library consumers.
 
 ## Status
 
-Initial implementation under validation. See the
+Initial release: v0.1.0. See the [changelog](CHANGELOG.md),
 [milestones](https://github.com/alex-1974/error-d/milestones) and
 [issues](https://github.com/alex-1974/error-d/issues).
 
