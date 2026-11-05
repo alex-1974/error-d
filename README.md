@@ -19,5 +19,13 @@ cross-language binary interface. Logging and presentation belong to consumers.
 
 ## Status
 
-Design phase. No implementation is available yet. Initialization semantics,
-ownership operations, and the public API remain to be finalized.
+Design phase. No implementation is available yet.
+
+[ADR 0001](docs/decisions/0001-result-states-and-access.md) defines states,
+initialization and access: completed success/failure outcomes, an explicit empty
+default state, checked access and `@mustuse`. Ownership operations and storage
+implementation remain to be finalized.
+
+Language probes: `python3 probes/issue-1/run.py` (requires DMD and LDC).
+
+Work is tracked in the [milestones](https://github.com/alex-1974/error-d/milestones).
