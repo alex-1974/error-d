@@ -1,9 +1,11 @@
-# v0.1 public API
+# v0.2 public API
 
 Import `error_d`. `ResultState` has `empty`, `success`, `failure`.
 
 `Result!(T, E)` exposes ValueType=T and ErrorType=E. E is a non-void storable value;
 T can also be void. Payload cleanup and transfer must compile @safe nothrow.
+Payloads with elaborate move hooks are rejected. Reference-copy payload copying
+is @system; postblits and noncopyable take follow their own operation attributes.
 The concrete supported operations remain conditional on payload capabilities.
 
 | Operation | Semantics |
@@ -32,3 +34,9 @@ produce qualified payload/error types: use explicit conversion/copy policy
 rather than casting away const. Copy/match/composition of noncopyable payloads
 is unavailable; explicit take transfers ownership. See the [guide](guide.md) for
 examples, supported configurations and thread/ABI limits.
+
+Destructible instantiations have a private destruction-state flag and a
+scope-qualified Result-level opPostMove. Copy/access/mutation of a dying owner
+and moving it out of its own destructor fail fast. Ordinary owning Result moves
+remain supported. Replacement commits before invoking retired payload cleanup.
+See [security review](security-review.md) for the reasons and exact restrictions.

@@ -10,6 +10,12 @@ private shared ulong sink;
 
 ulong loop(uint variant)(scope const(uint)[] input,uint threshold,uint batches) @safe nothrow @nogc {
     ulong checksum;
+    // Reuse caller-owned buffers across operations: ref must not pay for a
+    // fresh zero-initialized Block every iteration. out still initializes it
+    // on each call according to D semantics. Invalid branches are never read.
+    ulong outputValue;
+    Block outputBlock;
+    DomainError outputError;
     foreach(batch;0..batches) foreach(original;input) {
         uint x=original ^ (batch * 0x9e3779b9U);
             static if(variant==0) {
@@ -17,9 +23,8 @@ ulong loop(uint variant)(scope const(uint)[] input,uint threshold,uint batches) 
                 checksum+=r.hasValue ? r.value() : 0xdeadbeefUL+r.error().code;
             }
             else static if(variant==1 || variant==2) {
-                ulong value;DomainError error;
-                bool ok=variant==1 ? status_out_small(x,threshold,value,error) : status_ref_small(x,threshold,value,error);
-                checksum+=ok ? value : 0xdeadbeefUL+error.code;
+                bool ok=variant==1 ? status_out_small(x,threshold,outputValue,outputError) : status_ref_small(x,threshold,outputValue,outputError);
+                checksum+=ok ? outputValue : 0xdeadbeefUL+outputError.code;
             }
             else static if(variant==3) {
                 auto r=result_large(x,threshold);
@@ -27,18 +32,16 @@ ulong loop(uint variant)(scope const(uint)[] input,uint threshold,uint batches) 
                 else {auto value=r.value();checksum+=value.words[0]^value.words[$-1];}
             }
             else static if(variant==4 || variant==5) {
-                Block value;DomainError error;
-                bool ok=variant==4 ? status_out_large(x,threshold,value,error) : status_ref_large(x,threshold,value,error);
-                checksum+=ok ? value.words[0]^value.words[$-1] : 0xdeadbeefUL+error.code;
+                bool ok=variant==4 ? status_out_large(x,threshold,outputBlock,outputError) : status_ref_large(x,threshold,outputBlock,outputError);
+                checksum+=ok ? outputBlock.words[0]^outputBlock.words[$-1] : 0xdeadbeefUL+outputError.code;
             }
             else static if(variant==6) {
                 auto r=pipeline_result(x,threshold);
                 checksum+=r.hasValue ? r.value() : 0xdeadbeefUL+r.error().code;
             }
             else static if(variant==7) {
-                ulong value;DomainError error;
-                bool ok=pipeline_status(x,threshold,value,error);
-                checksum+=ok ? value : 0xdeadbeefUL+error.code;
+                bool ok=pipeline_status(x,threshold,outputValue,outputError);
+                checksum+=ok ? outputValue : 0xdeadbeefUL+outputError.code;
             }
     }
     atomicStore!(MemoryOrder.raw)(sink,checksum);

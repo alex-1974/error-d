@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.0 — 2026-11-05
+
+Safety review and reproducible cost study. Upgrade from v0.1.0.
+
+- Fix double cleanup and lost updates when a payload destructor reenters its
+  Result during replacement: detach old storage, commit, then clean up.
+- Fix mismatched payload/tag and a resource leak when a postblit replaces its
+  source during Result copying: select the branch before invoking copy code.
+- Guard final owner destruction, including attempts to move the owner from its
+  destructor; ordinary owning Result moves remain supported.
+- Restrict reference-copy payload access and Result copies to @system. This
+  closes an invalid-slice case previously accepted in @safe code. Unsafe callers
+  remain responsible for source non-reentrancy while reference copying.
+- Reject elaborate payload move hooks: the SumType union cannot forward them
+  reliably. This safety-related payload/API restriction motivates a minor release.
+- Add baseline/current adversarial probes, CI regressions and an updated audit.
+- Add size/copy metrics, optimized DMD/LDC timing against status/out and status/ref,
+  generated-code evidence, raw samples and a reproducible measurement report.
+
 ## 0.1.0 — 2026-11-05
 
 Initial public release.

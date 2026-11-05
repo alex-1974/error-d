@@ -80,12 +80,23 @@ operations compile without dropping qualifiers.
 Destruction and transfer must be @safe and nothrow; unsafe/throwing destructors
 or move hooks are rejected. Copy constructors and callbacks may throw, allocate
 or be @system, in which case the corresponding operation loses those guarantees.
-An operation unavailable for a payload is rejected at compile time. Types must
-obey ordinary D relocation rules; Result is not a new ownership/borrow checker.
+Reference-copy constructors can retain a reference to the source while arbitrary
+user code runs. Therefore value/error copy access and whole-Result copying for
+such payloads are @system, even when the payload's own copy constructor says
+@safe. Callers choosing @system must prevent source invalidation during copying.
+Postblits operate on the already-independent destination instead. Noncopyable
+payloads still use take and do not require reference-copy access.
+An operation unavailable for a payload is rejected at compile time. Payloads with elaborate move hooks (`opPostMove`, including nested hooks) are
+rejected: the union backend cannot forward them reliably. Ordinary Result
+owners can still be moved safely; the Result-level scope-qualified hook protects
+the owner's destruction state. Types must obey their own ordinary D relocation
+rules; Result is not a new ownership/borrow checker.
 
 Assignment prepares the incoming value before replacing the old one. A throwing
-copy leaves the destination intact. Self-copy follows the same rule. Payload
-opAssign is not invoked. Explicit take leaves Result empty, even for POD values.
+copy leaves the destination intact. Self-copy follows the same rule. A replacement is committed before the old
+payload is destroyed, so reentrant cleanup sees the new state and cannot cause
+an outer overwrite. During final owner destruction, access/mutation and attempts
+to move that owner abort; queries report empty. Payload opAssign is not invoked. Explicit take leaves Result empty, even for POD values.
 D's `move(result)` follows core.lifetime rules; do not rely on it resetting a
 trivial source. See [ADR 0002](decisions/0002-ownership.md).
 
@@ -160,3 +171,7 @@ redaction belong to the application boundary; Result performs none of them.
 BetterC, stable generic ABI, arbitrary generic-container compatibility and Rust
 ownership/thread guarantees are not v0.1 promises. See the decision records for
 rationale and the actual verification scope.
+
+See the [post-v0.1 safety review](security-review.md) for baseline reproductions
+and changed guarantees, and [cost measurements](performance.md) for the measured
+compiler-dependent overhead. v0.1.0 should be replaced by the corrected release.

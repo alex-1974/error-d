@@ -63,3 +63,9 @@ a substitute for tests against the production Result.
 References: [core.lifetime](https://dlang.org/phobos/core_lifetime.html),
 [struct lifetime](https://dlang.org/spec/struct.html),
 [memory safety](https://dlang.org/spec/memory-safe-d.html).
+
+Post-v0.1 amendment: the [safety review](../security-review.md) supersedes the
+original non-reentrant-cleanup assumption. Replacement commits before retired
+cleanup; final owner destruction is guarded. Reference-copy operations are
+@system and elaborate payload move hooks are rejected. Ordinary owner moves
+and noncopyable extraction remain supported.

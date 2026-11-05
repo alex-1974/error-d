@@ -41,3 +41,8 @@ a blanket Result CTFE promise. Conditional attributes follow actual operations.
 
 References: [SumType](https://dlang.org/library/std/sumtype.html),
 [core.lifetime](https://dlang.org/phobos/core_lifetime.html).
+
+Post-v0.1 amendment: [adversarial review](../security-review.md) demonstrates
+that whole-SumType copying and union-contained relocation need additional
+restrictions. See the corrected branch-selecting copy path, source-copy safety
+policy, lifetime guard and rejected payload move hooks.
