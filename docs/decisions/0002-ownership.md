@@ -69,3 +69,8 @@ original non-reentrant-cleanup assumption. Replacement commits before retired
 cleanup; final owner destruction is guarded. Reference-copy operations are
 @system and elaborate payload move hooks are rejected. Ordinary owner moves
 and noncopyable extraction remain supported.
+
+Exception-guarantee clarification: preparing an argument before replacement
+means the library does not commit a destination change if preparation throws.
+It cannot roll back side effects explicitly performed by a user copy hook,
+including a reentrant change to source or destination.

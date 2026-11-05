@@ -25,7 +25,9 @@ policy; qualified copy access and combinators inherit the selected operation's
 safety. A postblit acts on an already copied destination and is different from a
 reference-copy constructor borrowing the source. Noncopyable values still use
 explicit take and do not need a source-borrowing copy. Ordinary payload
-constructors, copies, callbacks and cleanup are not made trusted.
+constructors, copies, callbacks and cleanup are not made trusted. A throwing
+preparation does not make the library replace its destination, but user copy-hook
+side effects are not rolled back; this includes intentional reentrant mutations.
 
 ## Reproduce and verify
 

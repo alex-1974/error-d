@@ -92,8 +92,10 @@ owners can still be moved safely; the Result-level scope-qualified hook protects
 the owner's destruction state. Types must obey their own ordinary D relocation
 rules; Result is not a new ownership/borrow checker.
 
-Assignment prepares the incoming value before replacing the old one. A throwing
-copy leaves the destination intact. Self-copy follows the same rule. A replacement is committed before the old
+Assignment prepares the incoming value before replacing the old one. If
+preparation throws, the library has not replaced the destination. Side effects
+performed by a user copy hook (including deliberate reentrant mutations) are
+not rolled back. Self-copy follows the same rule. A replacement is committed before the old
 payload is destroyed, so reentrant cleanup sees the new state and cannot cause
 an outer overwrite. During final owner destruction, access/mutation and attempts
 to move that owner abort; queries report empty. Payload opAssign is not invoked. Explicit take leaves Result empty, even for POD values.
