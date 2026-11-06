@@ -1,4 +1,4 @@
-# v0.2 public API
+# v0.3 public API
 
 Import `error_d`. `ResultState` has `empty`, `success`, `failure`.
 
@@ -40,3 +40,9 @@ scope-qualified Result-level opPostMove. Copy/access/mutation of a dying owner
 and moving it out of its own destructor fail fast. Ordinary owning Result moves
 remain supported. Replacement commits before invoking retired payload cleanup.
 See [security review](security-review.md) for the reasons and exact restrictions.
+
+Trivial pointer-free instantiations use a private POD storage path; all others
+retain the general v0.2 backend. Recompile every D consumer: compiler-generated
+copies and return conventions can change even when sizeof does not. Inactive
+bytes are unspecified and no raw serialization, bytewise equality or erasure
+guarantee is provided. See [ADR 0005](decisions/0005-trivial-storage.md).

@@ -1,4 +1,6 @@
-# Result cost study
+# v0.2 Result cost study
+
+This is the preserved v0.2 study. See the [v0.3 comparison](performance-optimization.md) for the optimized implementation.
 
 Tracking: #16. This is a synthetic comparison of the corrected implementation,
 not a claim about whole applications or a compiler-independent zero-cost abstraction.

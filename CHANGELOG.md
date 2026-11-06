@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0 — 2026-11-06
+
+Performance optimization of trivial pointer-free results; general payloads keep
+the v0.2 safety/lifetime path.
+
+- Add a recursively constrained data-only storage path excluding references,
+  hooks, custom assignment, alias-this and qualified payload fields.
+- Construct only the active payload, preserve compiler-generated trivial copies
+  and allow small results to use register returns.
+- Simplify checked getters and trivial combinators; forward unchanged outcomes
+  without reconstructing them. Mark unconditional failure as noreturn.
+- Extend correctness/backend selection tests and keep adversarial regressions.
+- Add source-revision replay and same-process interleaved old/new benchmarks,
+  preserving raw samples, controls, generated code and slower cases.
+
+Source API remains unchanged, but POD traits/calling conventions can change.
+Recompile all D consumers; do not mix v0.2 and v0.3 objects using generic Result.
+The separate C status adapter remains unchanged. Inactive bytes are unspecified;
+no generic raw serialization, equality or erasure contract is added.
+
 ## 0.2.0 — 2026-11-05
 
 Safety review and reproducible cost study. Upgrade from v0.1.0.

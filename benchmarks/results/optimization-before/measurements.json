@@ -1,0 +1,1680 @@
+[
+  {
+    "kind": "code_size",
+    "compiler": "dmd",
+    "kernel": "pipeline_result",
+    "entry_bytes": 86,
+    "reachable_object_function_bytes": 1721,
+    "reachable_function_extents": 18,
+    "external_call_symbols": [
+      "memcpy"
+    ]
+  },
+  {
+    "kind": "code_size",
+    "compiler": "dmd",
+    "kernel": "pipeline_status",
+    "entry_bytes": 164,
+    "reachable_object_function_bytes": 164,
+    "reachable_function_extents": 1,
+    "external_call_symbols": []
+  },
+  {
+    "kind": "code_size",
+    "compiler": "dmd",
+    "kernel": "result_large",
+    "entry_bytes": 1344,
+    "reachable_object_function_bytes": 1702,
+    "reachable_function_extents": 9,
+    "external_call_symbols": [
+      "memcpy"
+    ]
+  },
+  {
+    "kind": "code_size",
+    "compiler": "dmd",
+    "kernel": "result_small",
+    "entry_bytes": 318,
+    "reachable_object_function_bytes": 543,
+    "reachable_function_extents": 7,
+    "external_call_symbols": [
+      "memcpy"
+    ]
+  },
+  {
+    "kind": "code_size",
+    "compiler": "dmd",
+    "kernel": "status_out_large",
+    "entry_bytes": 137,
+    "reachable_object_function_bytes": 209,
+    "reachable_function_extents": 2,
+    "external_call_symbols": []
+  },
+  {
+    "kind": "code_size",
+    "compiler": "dmd",
+    "kernel": "status_out_small",
+    "entry_bytes": 116,
+    "reachable_object_function_bytes": 116,
+    "reachable_function_extents": 1,
+    "external_call_symbols": []
+  },
+  {
+    "kind": "code_size",
+    "compiler": "dmd",
+    "kernel": "status_ref_large",
+    "entry_bytes": 133,
+    "reachable_object_function_bytes": 205,
+    "reachable_function_extents": 2,
+    "external_call_symbols": []
+  },
+  {
+    "kind": "code_size",
+    "compiler": "dmd",
+    "kernel": "status_ref_small",
+    "entry_bytes": 102,
+    "reachable_object_function_bytes": 102,
+    "reachable_function_extents": 1,
+    "external_call_symbols": []
+  },
+  {
+    "checksum": "10249840717643653716",
+    "kernel": "result_small",
+    "kind": "runtime",
+    "operations": 1376256,
+    "samples_ns": [
+      47628300,
+      46842500,
+      46603500,
+      46942100,
+      46686800,
+      47548500,
+      48370400
+    ],
+    "threshold": 0,
+    "compiler": "dmd",
+    "median_ns_per_op": 34.10855247860863,
+    "min_ns_per_op": 33.862522670200896,
+    "max_ns_per_op": 35.146368117559526,
+    "mad_ns_per_op": 0.2460298084077337
+  },
+  {
+    "checksum": "10249840717643653716",
+    "kernel": "status_out_small",
+    "kind": "runtime",
+    "operations": 1376256,
+    "samples_ns": [
+      6796100,
+      6679600,
+      6515900,
+      6634800,
+      6609100,
+      6633400,
+      6620100
+    ],
+    "threshold": 0,
+    "compiler": "dmd",
+    "median_ns_per_op": 4.819888160342262,
+    "min_ns_per_op": 4.734511602492559,
+    "max_ns_per_op": 4.938107445126488,
+    "mad_ns_per_op": 0.017656598772321175
+  },
+  {
+    "checksum": "10249840717643653716",
+    "kernel": "status_ref_small",
+    "kind": "runtime",
+    "operations": 1376256,
+    "samples_ns": [
+      7055100,
+      6873100,
+      6856000,
+      6906000,
+      6944000,
+      6872700,
+      7003300
+    ],
+    "threshold": 0,
+    "compiler": "dmd",
+    "median_ns_per_op": 5.017961774553571,
+    "min_ns_per_op": 4.981631324404762,
+    "max_ns_per_op": 5.126299176897321,
+    "mad_ns_per_op": 0.027611142113095788
+  },
+  {
+    "checksum": "14898089913973087087",
+    "kernel": "result_large",
+    "kind": "runtime",
+    "operations": 65536,
+    "samples_ns": [
+      27043100,
+      26618100,
+      27704100,
+      27616000,
+      27100100,
+      27029100,
+      27323400
+    ],
+    "threshold": 0,
+    "compiler": "dmd",
+    "median_ns_per_op": 413.51470947265625,
+    "min_ns_per_op": 406.15997314453125,
+    "max_ns_per_op": 422.73101806640625,
+    "mad_ns_per_op": 3.40728759765625
+  },
+  {
+    "checksum": "14898089913973087087",
+    "kernel": "status_out_large",
+    "kind": "runtime",
+    "operations": 65536,
+    "samples_ns": [
+      10001300,
+      10185400,
+      10126200,
+      10067000,
+      10049500,
+      9862700,
+      10021200
+    ],
+    "threshold": 0,
+    "compiler": "dmd",
+    "median_ns_per_op": 153.34320068359375,
+    "min_ns_per_op": 150.49285888671875,
+    "max_ns_per_op": 155.4168701171875,
+    "mad_ns_per_op": 0.7354736328125
+  },
+  {
+    "checksum": "14898089913973087087",
+    "kernel": "status_ref_large",
+    "kind": "runtime",
+    "operations": 65536,
+    "samples_ns": [
+      8309400,
+      8510100,
+      8526100,
+      8442100,
+      8548600,
+      8206600,
+      8534300
+    ],
+    "threshold": 0,
+    "compiler": "dmd",
+    "median_ns_per_op": 129.85382080078125,
+    "min_ns_per_op": 125.2227783203125,
+    "max_ns_per_op": 130.4412841796875,
+    "mad_ns_per_op": 0.58746337890625
+  },
+  {
+    "checksum": "1106512325814266230",
+    "kernel": "pipeline_result",
+    "kind": "runtime",
+    "operations": 393216,
+    "samples_ns": [
+      43079400,
+      42858800,
+      42945800,
+      42758500,
+      51785900,
+      43197400,
+      44048800
+    ],
+    "threshold": 0,
+    "compiler": "dmd",
+    "median_ns_per_op": 109.55657958984375,
+    "min_ns_per_op": 108.74048868815105,
+    "max_ns_per_op": 131.69835408528647,
+    "mad_ns_per_op": 0.5610148111979214
+  },
+  {
+    "checksum": "1106512325814266230",
+    "kernel": "pipeline_status",
+    "kind": "runtime",
+    "operations": 393216,
+    "samples_ns": [
+      3556800,
+      3537800,
+      3525200,
+      3549700,
+      3569200,
+      3710700,
+      3697500
+    ],
+    "threshold": 0,
+    "compiler": "dmd",
+    "median_ns_per_op": 9.04541015625,
+    "min_ns_per_op": 8.965047200520834,
+    "max_ns_per_op": 9.436798095703125,
+    "mad_ns_per_op": 0.048319498697916075
+  },
+  {
+    "checksum": "13267811611407062857",
+    "kernel": "result_small",
+    "kind": "runtime",
+    "operations": 1376256,
+    "samples_ns": [
+      47479500,
+      47429600,
+      47343200,
+      47275500,
+      48023000,
+      47429100,
+      47350300
+    ],
+    "threshold": 3,
+    "compiler": "dmd",
+    "median_ns_per_op": 34.462411063058035,
+    "min_ns_per_op": 34.350803920200896,
+    "max_ns_per_op": 34.893944149925595,
+    "mad_ns_per_op": 0.0572567894345255
+  },
+  {
+    "checksum": "13267811611407062857",
+    "kernel": "status_out_small",
+    "kind": "runtime",
+    "operations": 1376256,
+    "samples_ns": [
+      6772200,
+      6729000,
+      6583500,
+      6647400,
+      6653100,
+      6770500,
+      6770200
+    ],
+    "threshold": 3,
+    "compiler": "dmd",
+    "median_ns_per_op": 4.889351981026786,
+    "min_ns_per_op": 4.78363037109375,
+    "max_ns_per_op": 4.920741489955357,
+    "mad_ns_per_op": 0.031389508928571175
+  },
+  {
+    "checksum": "13267811611407062857",
+    "kernel": "status_ref_small",
+    "kind": "runtime",
+    "operations": 1376256,
+    "samples_ns": [
+      6897000,
+      6970700,
+      6962400,
+      7038200,
+      6977500,
+      7004900,
+      7002400
+    ],
+    "threshold": 3,
+    "compiler": "dmd",
+    "median_ns_per_op": 5.069914318266369,
+    "min_ns_per_op": 5.011422293526786,
+    "max_ns_per_op": 5.114019484747024,
+    "mad_ns_per_op": 0.01809256417410765
+  },
+  {
+    "checksum": "6615644210157105655",
+    "kernel": "result_large",
+    "kind": "runtime",
+    "operations": 65536,
+    "samples_ns": [
+      27137900,
+      26726700,
+      26442000,
+      27575000,
+      27460800,
+      26756200,
+      26686200
+    ],
+    "threshold": 3,
+    "compiler": "dmd",
+    "median_ns_per_op": 408.2672119140625,
+    "min_ns_per_op": 403.472900390625,
+    "max_ns_per_op": 420.7611083984375,
+    "mad_ns_per_op": 4.7943115234375
+  },
+  {
+    "checksum": "6615644210157105655",
+    "kernel": "status_out_large",
+    "kind": "runtime",
+    "operations": 65536,
+    "samples_ns": [
+      9769600,
+      9750200,
+      9529300,
+      9984900,
+      9955800,
+      9774600,
+      9685500
+    ],
+    "threshold": 3,
+    "compiler": "dmd",
+    "median_ns_per_op": 149.072265625,
+    "min_ns_per_op": 145.40557861328125,
+    "max_ns_per_op": 152.35748291015625,
+    "mad_ns_per_op": 1.28326416015625
+  },
+  {
+    "checksum": "6615644210157105655",
+    "kernel": "status_ref_large",
+    "kind": "runtime",
+    "operations": 65536,
+    "samples_ns": [
+      8147700,
+      8190800,
+      8110100,
+      8594400,
+      8791600,
+      8434400,
+      8501000
+    ],
+    "threshold": 3,
+    "compiler": "dmd",
+    "median_ns_per_op": 128.69873046875,
+    "min_ns_per_op": 123.75030517578125,
+    "max_ns_per_op": 134.149169921875,
+    "mad_ns_per_op": 3.717041015625
+  },
+  {
+    "checksum": "6155553970572222267",
+    "kernel": "pipeline_result",
+    "kind": "runtime",
+    "operations": 393216,
+    "samples_ns": [
+      43679400,
+      43211000,
+      53209800,
+      43179700,
+      43126900,
+      42995900,
+      43339900
+    ],
+    "threshold": 3,
+    "compiler": "dmd",
+    "median_ns_per_op": 109.89125569661458,
+    "min_ns_per_op": 109.34422810872395,
+    "max_ns_per_op": 135.31951904296875,
+    "mad_ns_per_op": 0.3278096516927178
+  },
+  {
+    "checksum": "6155553970572222267",
+    "kernel": "pipeline_status",
+    "kind": "runtime",
+    "operations": 393216,
+    "samples_ns": [
+      3488300,
+      3508900,
+      3548300,
+      3565900,
+      3623900,
+      3575500,
+      3460800
+    ],
+    "threshold": 3,
+    "compiler": "dmd",
+    "median_ns_per_op": 9.023793538411459,
+    "min_ns_per_op": 8.80126953125,
+    "max_ns_per_op": 9.216054280598959,
+    "mad_ns_per_op": 0.10019938151041785
+  },
+  {
+    "checksum": "223759773053442040",
+    "kernel": "result_small",
+    "kind": "runtime",
+    "operations": 1310720,
+    "samples_ns": [
+      49540800,
+      49993200,
+      49448800,
+      48594200,
+      48656400,
+      48942900,
+      52082500
+    ],
+    "threshold": 128,
+    "compiler": "dmd",
+    "median_ns_per_op": 37.7264404296875,
+    "min_ns_per_op": 37.074432373046875,
+    "max_ns_per_op": 39.73579406738281,
+    "mad_ns_per_op": 0.41534423828125
+  },
+  {
+    "checksum": "223759773053442040",
+    "kernel": "status_out_small",
+    "kind": "runtime",
+    "operations": 1310720,
+    "samples_ns": [
+      10773300,
+      10596500,
+      10386700,
+      10294800,
+      10314300,
+      10606500,
+      10476300
+    ],
+    "threshold": 128,
+    "compiler": "dmd",
+    "median_ns_per_op": 7.9927825927734375,
+    "min_ns_per_op": 7.85430908203125,
+    "max_ns_per_op": 8.219375610351562,
+    "mad_ns_per_op": 0.099334716796875
+  },
+  {
+    "checksum": "223759773053442040",
+    "kernel": "status_ref_small",
+    "kind": "runtime",
+    "operations": 1310720,
+    "samples_ns": [
+      11329400,
+      10909400,
+      11209800,
+      10882700,
+      10768700,
+      10911200,
+      11071400
+    ],
+    "threshold": 128,
+    "compiler": "dmd",
+    "median_ns_per_op": 8.3245849609375,
+    "min_ns_per_op": 8.215866088867188,
+    "max_ns_per_op": 8.643646240234375,
+    "mad_ns_per_op": 0.1087188720703125
+  },
+  {
+    "checksum": "3701284888583231329",
+    "kernel": "result_large",
+    "kind": "runtime",
+    "operations": 131072,
+    "samples_ns": [
+      46785000,
+      36536700,
+      37487400,
+      37693400,
+      37661800,
+      36019700,
+      35914500
+    ],
+    "threshold": 128,
+    "compiler": "dmd",
+    "median_ns_per_op": 286.00616455078125,
+    "min_ns_per_op": 274.0058898925781,
+    "max_ns_per_op": 356.94122314453125,
+    "mad_ns_per_op": 7.253265380859375
+  },
+  {
+    "checksum": "3701284888583231329",
+    "kernel": "status_out_large",
+    "kind": "runtime",
+    "operations": 131072,
+    "samples_ns": [
+      11034900,
+      11389900,
+      11555600,
+      11569000,
+      11617600,
+      11195000,
+      11146800
+    ],
+    "threshold": 128,
+    "compiler": "dmd",
+    "median_ns_per_op": 86.89804077148438,
+    "min_ns_per_op": 84.18960571289062,
+    "max_ns_per_op": 88.63525390625,
+    "mad_ns_per_op": 1.486968994140625
+  },
+  {
+    "checksum": "3701284888583231329",
+    "kernel": "status_ref_large",
+    "kind": "runtime",
+    "operations": 131072,
+    "samples_ns": [
+      9067500,
+      9176600,
+      9056000,
+      9473300,
+      9305100,
+      9608800,
+      9174900
+    ],
+    "threshold": 128,
+    "compiler": "dmd",
+    "median_ns_per_op": 70.01190185546875,
+    "min_ns_per_op": 69.091796875,
+    "max_ns_per_op": 73.309326171875,
+    "mad_ns_per_op": 0.92010498046875
+  },
+  {
+    "checksum": "8577129925930683783",
+    "kernel": "pipeline_result",
+    "kind": "runtime",
+    "operations": 393216,
+    "samples_ns": [
+      45063900,
+      45365600,
+      44568500,
+      44359400,
+      44274100,
+      44463900,
+      45680900
+    ],
+    "threshold": 128,
+    "compiler": "dmd",
+    "median_ns_per_op": 113.3435567220052,
+    "min_ns_per_op": 112.59485880533855,
+    "max_ns_per_op": 116.1725362141927,
+    "mad_ns_per_op": 0.7486979166666572
+  },
+  {
+    "checksum": "8577129925930683783",
+    "kernel": "pipeline_status",
+    "kind": "runtime",
+    "operations": 393216,
+    "samples_ns": [
+      4338600,
+      4402100,
+      4235000,
+      4201800,
+      4295100,
+      4168100,
+      7926900
+    ],
+    "threshold": 128,
+    "compiler": "dmd",
+    "median_ns_per_op": 10.923004150390625,
+    "min_ns_per_op": 10.600026448567709,
+    "max_ns_per_op": 20.159149169921875,
+    "mad_ns_per_op": 0.237274169921875
+  },
+  {
+    "checksum": "5631269724487680",
+    "kernel": "result_small",
+    "kind": "runtime",
+    "operations": 1507328,
+    "samples_ns": [
+      50849000,
+      51487000,
+      50746500,
+      59806600,
+      51485000,
+      51321100,
+      50928600
+    ],
+    "threshold": 256,
+    "compiler": "dmd",
+    "median_ns_per_op": 34.047732145889945,
+    "min_ns_per_op": 33.66652778957201,
+    "max_ns_per_op": 39.67723017153533,
+    "mad_ns_per_op": 0.2603945524796174
+  },
+  {
+    "checksum": "5631269724487680",
+    "kernel": "status_out_small",
+    "kind": "runtime",
+    "operations": 1507328,
+    "samples_ns": [
+      11466300,
+      11514400,
+      11624700,
+      11625700,
+      11504900,
+      11694700,
+      11477900
+    ],
+    "threshold": 256,
+    "compiler": "dmd",
+    "median_ns_per_op": 7.638947860054348,
+    "min_ns_per_op": 7.607037088145381,
+    "max_ns_per_op": 7.758563497792119,
+    "mad_ns_per_op": 0.03191077190896685
+  },
+  {
+    "checksum": "5631269724487680",
+    "kernel": "status_ref_small",
+    "kind": "runtime",
+    "operations": 1507328,
+    "samples_ns": [
+      10458100,
+      10461600,
+      10676000,
+      10505200,
+      10837700,
+      10600100,
+      10541300
+    ],
+    "threshold": 256,
+    "compiler": "dmd",
+    "median_ns_per_op": 6.993368397588315,
+    "min_ns_per_op": 6.93817138671875,
+    "max_ns_per_op": 7.190007748811142,
+    "mad_ns_per_op": 0.05287502122962007
+  },
+  {
+    "checksum": "1224189070540800",
+    "kernel": "result_large",
+    "kind": "runtime",
+    "operations": 327680,
+    "samples_ns": [
+      44112400,
+      44249100,
+      45715400,
+      45678500,
+      44214100,
+      44328100,
+      44027600
+    ],
+    "threshold": 256,
+    "compiler": "dmd",
+    "median_ns_per_op": 135.03753662109375,
+    "min_ns_per_op": 134.361572265625,
+    "max_ns_per_op": 139.5123291015625,
+    "mad_ns_per_op": 0.41717529296875
+  },
+  {
+    "checksum": "1224189070540800",
+    "kernel": "status_out_large",
+    "kind": "runtime",
+    "operations": 327680,
+    "samples_ns": [
+      6637500,
+      6657300,
+      6859900,
+      6816600,
+      6770900,
+      6721500,
+      6650600
+    ],
+    "threshold": 256,
+    "compiler": "dmd",
+    "median_ns_per_op": 20.51239013671875,
+    "min_ns_per_op": 20.25604248046875,
+    "max_ns_per_op": 20.93475341796875,
+    "mad_ns_per_op": 0.21636962890625
+  },
+  {
+    "checksum": "1224189070540800",
+    "kernel": "status_ref_large",
+    "kind": "runtime",
+    "operations": 327680,
+    "samples_ns": [
+      2664100,
+      2644000,
+      2690800,
+      2650400,
+      2743300,
+      2706600,
+      2669900
+    ],
+    "threshold": 256,
+    "compiler": "dmd",
+    "median_ns_per_op": 8.14788818359375,
+    "min_ns_per_op": 8.06884765625,
+    "max_ns_per_op": 8.37188720703125,
+    "mad_ns_per_op": 0.06378173828125
+  },
+  {
+    "checksum": "1958702512865280",
+    "kernel": "pipeline_result",
+    "kind": "runtime",
+    "operations": 524288,
+    "samples_ns": [
+      48692200,
+      48489900,
+      48465900,
+      48469100,
+      48931400,
+      48875400,
+      49038900
+    ],
+    "threshold": 256,
+    "compiler": "dmd",
+    "median_ns_per_op": 92.87300109863281,
+    "min_ns_per_op": 92.44136810302734,
+    "max_ns_per_op": 93.5342788696289,
+    "mad_ns_per_op": 0.42552947998046875
+  },
+  {
+    "checksum": "1958702512865280",
+    "kernel": "pipeline_status",
+    "kind": "runtime",
+    "operations": 524288,
+    "samples_ns": [
+      3954000,
+      3989900,
+      3978900,
+      4024000,
+      3994100,
+      4334900,
+      4024500
+    ],
+    "threshold": 256,
+    "compiler": "dmd",
+    "median_ns_per_op": 7.618141174316406,
+    "min_ns_per_op": 7.541656494140625,
+    "max_ns_per_op": 8.268165588378906,
+    "mad_ns_per_op": 0.05702972412109375
+  },
+  {
+    "error_bytes": 8,
+    "kind": "size",
+    "payload": "ulong",
+    "result_bytes": 16,
+    "status_carrier_bytes": 24,
+    "value_bytes": 8,
+    "compiler": "dmd"
+  },
+  {
+    "error_bytes": 8,
+    "kind": "size",
+    "payload": "block256",
+    "result_bytes": 264,
+    "status_carrier_bytes": 272,
+    "value_bytes": 256,
+    "compiler": "dmd"
+  },
+  {
+    "error_bytes": 8,
+    "kind": "size",
+    "payload": "void",
+    "result_bytes": 12,
+    "value_bytes": 0,
+    "compiler": "dmd"
+  },
+  {
+    "error_bytes": 8,
+    "kind": "size",
+    "payload": "instrumented_counted",
+    "result_bytes": 280,
+    "status_carrier_bytes": 280,
+    "value_bytes": 264,
+    "compiler": "dmd"
+  },
+  {
+    "copies": 0,
+    "kind": "copies",
+    "operation": "factory_temporary",
+    "compiler": "dmd"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "result_copy",
+    "compiler": "dmd"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "value",
+    "compiler": "dmd"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "map",
+    "compiler": "dmd"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "match",
+    "compiler": "dmd"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "assignment",
+    "compiler": "dmd"
+  },
+  {
+    "copies": 0,
+    "kind": "copies",
+    "operation": "take",
+    "compiler": "dmd"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "factory_lvalue",
+    "compiler": "dmd"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "status_out_assignment",
+    "compiler": "dmd"
+  },
+  {
+    "kind": "code_size",
+    "compiler": "ldc2",
+    "kernel": "pipeline_result",
+    "entry_bytes": 122,
+    "reachable_object_function_bytes": 220,
+    "reachable_function_extents": 3,
+    "external_call_symbols": []
+  },
+  {
+    "kind": "code_size",
+    "compiler": "ldc2",
+    "kernel": "pipeline_status",
+    "entry_bytes": 97,
+    "reachable_object_function_bytes": 97,
+    "reachable_function_extents": 1,
+    "external_call_symbols": []
+  },
+  {
+    "kind": "code_size",
+    "compiler": "ldc2",
+    "kernel": "result_large",
+    "entry_bytes": 225,
+    "reachable_object_function_bytes": 921,
+    "reachable_function_extents": 2,
+    "external_call_symbols": [
+      "memcpy"
+    ]
+  },
+  {
+    "kind": "code_size",
+    "compiler": "ldc2",
+    "kernel": "result_small",
+    "entry_bytes": 67,
+    "reachable_object_function_bytes": 67,
+    "reachable_function_extents": 1,
+    "external_call_symbols": []
+  },
+  {
+    "kind": "code_size",
+    "compiler": "ldc2",
+    "kernel": "status_out_large",
+    "entry_bytes": 184,
+    "reachable_object_function_bytes": 880,
+    "reachable_function_extents": 2,
+    "external_call_symbols": [
+      "memcpy"
+    ]
+  },
+  {
+    "kind": "code_size",
+    "compiler": "ldc2",
+    "kernel": "status_out_small",
+    "entry_bytes": 68,
+    "reachable_object_function_bytes": 68,
+    "reachable_function_extents": 1,
+    "external_call_symbols": []
+  },
+  {
+    "kind": "code_size",
+    "compiler": "ldc2",
+    "kernel": "status_ref_large",
+    "entry_bytes": 87,
+    "reachable_object_function_bytes": 783,
+    "reachable_function_extents": 2,
+    "external_call_symbols": [
+      "memcpy"
+    ]
+  },
+  {
+    "kind": "code_size",
+    "compiler": "ldc2",
+    "kernel": "status_ref_small",
+    "entry_bytes": 54,
+    "reachable_object_function_bytes": 54,
+    "reachable_function_extents": 1,
+    "external_call_symbols": []
+  },
+  {
+    "checksum": "15887451781709482292",
+    "kernel": "result_small",
+    "kind": "runtime",
+    "operations": 4390912,
+    "samples_ns": [
+      40527000,
+      40017000,
+      40125000,
+      42386300,
+      41224700,
+      41994800,
+      41515700
+    ],
+    "threshold": 0,
+    "compiler": "ldc2",
+    "median_ns_per_op": 9.388641812908116,
+    "min_ns_per_op": 9.113596446478544,
+    "max_ns_per_op": 9.653188221490206,
+    "mad_ns_per_op": 0.17538497697061572
+  },
+  {
+    "checksum": "15887451781709482292",
+    "kernel": "status_out_small",
+    "kind": "runtime",
+    "operations": 4390912,
+    "samples_ns": [
+      15508300,
+      15545600,
+      15544800,
+      15965700,
+      15928100,
+      15742700,
+      15310100
+    ],
+    "threshold": 0,
+    "compiler": "ldc2",
+    "median_ns_per_op": 3.540403451492537,
+    "min_ns_per_op": 3.4867699466534514,
+    "max_ns_per_op": 3.6360783363456157,
+    "mad_ns_per_op": 0.04488816901819037
+  },
+  {
+    "checksum": "15887451781709482292",
+    "kernel": "status_ref_small",
+    "kind": "runtime",
+    "operations": 4390912,
+    "samples_ns": [
+      13690400,
+      13708500,
+      13792400,
+      13790900,
+      13780700,
+      13686500,
+      13567600
+    ],
+    "threshold": 0,
+    "compiler": "ldc2",
+    "median_ns_per_op": 3.1220165651236007,
+    "min_ns_per_op": 3.0899275594682836,
+    "max_ns_per_op": 3.141124212919776,
+    "mad_ns_per_op": 0.016443053288246468
+  },
+  {
+    "checksum": "17286634864864235807",
+    "kernel": "result_large",
+    "kind": "runtime",
+    "operations": 1114112,
+    "samples_ns": [
+      46442000,
+      46556000,
+      46233600,
+      46611400,
+      48703200,
+      47976900,
+      47908400
+    ],
+    "threshold": 0,
+    "compiler": "ldc2",
+    "median_ns_per_op": 41.83726591222427,
+    "min_ns_per_op": 41.498161764705884,
+    "max_ns_per_op": 43.71481502757353,
+    "mad_ns_per_op": 0.339104147518384
+  },
+  {
+    "checksum": "17286634864864235807",
+    "kernel": "status_out_large",
+    "kind": "runtime",
+    "operations": 1114112,
+    "samples_ns": [
+      48071800,
+      47721600,
+      47716000,
+      47960200,
+      49370600,
+      48639600,
+      48583300
+    ],
+    "threshold": 0,
+    "compiler": "ldc2",
+    "median_ns_per_op": 43.14808565027573,
+    "min_ns_per_op": 42.828728170955884,
+    "max_ns_per_op": 44.31385713465073,
+    "mad_ns_per_op": 0.3193574793198479
+  },
+  {
+    "checksum": "17286634864864235807",
+    "kernel": "status_ref_large",
+    "kind": "runtime",
+    "operations": 1114112,
+    "samples_ns": [
+      42197700,
+      41917700,
+      42190000,
+      48458300,
+      43016100,
+      42727400,
+      52149400
+    ],
+    "threshold": 0,
+    "compiler": "ldc2",
+    "median_ns_per_op": 38.351081399356616,
+    "min_ns_per_op": 37.62431425206802,
+    "max_ns_per_op": 46.80804084329044,
+    "mad_ns_per_op": 0.482357249540442
+  },
+  {
+    "checksum": "4561322097328165871",
+    "kernel": "pipeline_result",
+    "kind": "runtime",
+    "operations": 3866624,
+    "samples_ns": [
+      53228200,
+      52747200,
+      52636100,
+      56947200,
+      53452700,
+      53488600,
+      52584300
+    ],
+    "threshold": 0,
+    "compiler": "ldc2",
+    "median_ns_per_op": 13.766065694518009,
+    "min_ns_per_op": 13.599537994902013,
+    "max_ns_per_op": 14.727886652542374,
+    "mad_ns_per_op": 0.12439792439088926
+  },
+  {
+    "checksum": "4561322097328165871",
+    "kernel": "pipeline_status",
+    "kind": "runtime",
+    "operations": 3866624,
+    "samples_ns": [
+      23601600,
+      23292800,
+      23382300,
+      24251000,
+      23809500,
+      23744400,
+      23620400
+    ],
+    "threshold": 0,
+    "compiler": "ldc2",
+    "median_ns_per_op": 6.108791545286017,
+    "min_ns_per_op": 6.024066472457627,
+    "max_ns_per_op": 6.271879551774364,
+    "mad_ns_per_op": 0.048905712063029405
+  },
+  {
+    "checksum": "10974369393466292089",
+    "kernel": "result_small",
+    "kind": "runtime",
+    "operations": 5242880,
+    "samples_ns": [
+      50316700,
+      50608300,
+      50909500,
+      50152900,
+      50202200,
+      50197000,
+      49905800
+    ],
+    "threshold": 3,
+    "compiler": "ldc2",
+    "median_ns_per_op": 9.575309753417969,
+    "min_ns_per_op": 9.518775939941406,
+    "max_ns_per_op": 9.710216522216797,
+    "mad_ns_per_op": 0.021839141845703125
+  },
+  {
+    "checksum": "10974369393466292089",
+    "kernel": "status_out_small",
+    "kind": "runtime",
+    "operations": 5242880,
+    "samples_ns": [
+      19281600,
+      19372900,
+      19898900,
+      19120200,
+      19128100,
+      19282300,
+      19370700
+    ],
+    "threshold": 3,
+    "compiler": "ldc2",
+    "median_ns_per_op": 3.677806854248047,
+    "min_ns_per_op": 3.6468887329101562,
+    "max_ns_per_op": 3.7954139709472656,
+    "mad_ns_per_op": 0.01728057861328125
+  },
+  {
+    "checksum": "10974369393466292089",
+    "kernel": "status_ref_small",
+    "kind": "runtime",
+    "operations": 5242880,
+    "samples_ns": [
+      16930200,
+      16779500,
+      17358600,
+      16896100,
+      16772500,
+      16772600,
+      16758500
+    ],
+    "threshold": 3,
+    "compiler": "ldc2",
+    "median_ns_per_op": 3.2004356384277344,
+    "min_ns_per_op": 3.196430206298828,
+    "max_ns_per_op": 3.3108901977539062,
+    "mad_ns_per_op": 0.00400543212890625
+  },
+  {
+    "checksum": "8231195634345363811",
+    "kernel": "result_large",
+    "kind": "runtime",
+    "operations": 1114112,
+    "samples_ns": [
+      45306900,
+      45058800,
+      46932600,
+      46132300,
+      45807100,
+      53822500,
+      45084800
+    ],
+    "threshold": 3,
+    "compiler": "ldc2",
+    "median_ns_per_op": 41.115345674402576,
+    "min_ns_per_op": 40.44368968290441,
+    "max_ns_per_op": 48.309774959788605,
+    "mad_ns_per_op": 0.648319019990808
+  },
+  {
+    "checksum": "8231195634345363811",
+    "kernel": "status_out_large",
+    "kind": "runtime",
+    "operations": 1114112,
+    "samples_ns": [
+      46212700,
+      46898900,
+      49876200,
+      47098200,
+      46908000,
+      45737700,
+      46443400
+    ],
+    "threshold": 3,
+    "compiler": "ldc2",
+    "median_ns_per_op": 42.09531896254595,
+    "min_ns_per_op": 41.05305391199448,
+    "max_ns_per_op": 44.76767147288603,
+    "mad_ns_per_op": 0.408845789292279
+  },
+  {
+    "checksum": "8231195634345363811",
+    "kernel": "status_ref_large",
+    "kind": "runtime",
+    "operations": 1114112,
+    "samples_ns": [
+      38491000,
+      39374900,
+      47406600,
+      40147300,
+      40473400,
+      38832900,
+      39634300
+    ],
+    "threshold": 3,
+    "compiler": "ldc2",
+    "median_ns_per_op": 35.574789608226105,
+    "min_ns_per_op": 34.548591164981616,
+    "max_ns_per_op": 42.551018210018384,
+    "mad_ns_per_op": 0.719317267922797
+  },
+  {
+    "checksum": "17466774416698038575",
+    "kernel": "pipeline_result",
+    "kind": "runtime",
+    "operations": 3735552,
+    "samples_ns": [
+      51625700,
+      52593500,
+      51829500,
+      51145000,
+      51110600,
+      51457900,
+      51499300
+    ],
+    "threshold": 3,
+    "compiler": "ldc2",
+    "median_ns_per_op": 13.786262378358005,
+    "min_ns_per_op": 13.682208144873904,
+    "max_ns_per_op": 14.079177588747259,
+    "mad_ns_per_op": 0.08839389734100855
+  },
+  {
+    "checksum": "17466774416698038575",
+    "kernel": "pipeline_status",
+    "kind": "runtime",
+    "operations": 3735552,
+    "samples_ns": [
+      23347900,
+      23552300,
+      22866400,
+      22731300,
+      22805600,
+      23248500,
+      23294700
+    ],
+    "threshold": 3,
+    "compiler": "ldc2",
+    "median_ns_per_op": 6.223578202097039,
+    "min_ns_per_op": 6.085124768708882,
+    "max_ns_per_op": 6.304904870819628,
+    "mad_ns_per_op": 0.0813266687225882
+  },
+  {
+    "checksum": "15511738130952657850",
+    "kernel": "result_small",
+    "kind": "runtime",
+    "operations": 3604480,
+    "samples_ns": [
+      49440300,
+      50249800,
+      50195700,
+      49577200,
+      49785200,
+      49386200,
+      50682200
+    ],
+    "threshold": 128,
+    "compiler": "ldc2",
+    "median_ns_per_op": 13.812033913352273,
+    "min_ns_per_op": 13.701338334517045,
+    "max_ns_per_op": 14.060890891335227,
+    "mad_ns_per_op": 0.1106955788352284
+  },
+  {
+    "checksum": "15511738130952657850",
+    "kernel": "status_out_small",
+    "kind": "runtime",
+    "operations": 3604480,
+    "samples_ns": [
+      25042100,
+      24947600,
+      25135900,
+      24740600,
+      25690500,
+      24752400,
+      25452300
+    ],
+    "threshold": 128,
+    "compiler": "ldc2",
+    "median_ns_per_op": 6.947493119673296,
+    "min_ns_per_op": 6.863847212357954,
+    "max_ns_per_op": 7.12738037109375,
+    "mad_ns_per_op": 0.0803722034801142
+  },
+  {
+    "checksum": "15511738130952657850",
+    "kernel": "status_ref_small",
+    "kind": "runtime",
+    "operations": 3604480,
+    "samples_ns": [
+      24463400,
+      35174600,
+      25135700,
+      24861500,
+      24714100,
+      24775600,
+      25433600
+    ],
+    "threshold": 128,
+    "compiler": "ldc2",
+    "median_ns_per_op": 6.897388805042613,
+    "min_ns_per_op": 6.786942915482954,
+    "max_ns_per_op": 9.758578213778408,
+    "mad_ns_per_op": 0.07607199928977337
+  },
+  {
+    "checksum": "10705454819620095587",
+    "kernel": "result_large",
+    "kind": "runtime",
+    "operations": 1638400,
+    "samples_ns": [
+      49785300,
+      49414800,
+      50743300,
+      50362100,
+      49570800,
+      49477800,
+      50474200
+    ],
+    "threshold": 128,
+    "compiler": "ldc2",
+    "median_ns_per_op": 30.38653564453125,
+    "min_ns_per_op": 30.160400390625,
+    "max_ns_per_op": 30.97125244140625,
+    "mad_ns_per_op": 0.22613525390625
+  },
+  {
+    "checksum": "10705454819620095587",
+    "kernel": "status_out_large",
+    "kind": "runtime",
+    "operations": 1638400,
+    "samples_ns": [
+      44289400,
+      45519500,
+      44483500,
+      44503700,
+      44220800,
+      43843200,
+      45206500
+    ],
+    "threshold": 128,
+    "compiler": "ldc2",
+    "median_ns_per_op": 27.15057373046875,
+    "min_ns_per_op": 26.759765625,
+    "max_ns_per_op": 27.78289794921875,
+    "mad_ns_per_op": 0.16033935546875
+  },
+  {
+    "checksum": "10705454819620095587",
+    "kernel": "status_ref_large",
+    "kind": "runtime",
+    "operations": 1638400,
+    "samples_ns": [
+      37787600,
+      38383900,
+      38009500,
+      38093800,
+      37855200,
+      37644400,
+      38505100
+    ],
+    "threshold": 128,
+    "compiler": "ldc2",
+    "median_ns_per_op": 23.19915771484375,
+    "min_ns_per_op": 22.976318359375,
+    "max_ns_per_op": 23.50164794921875,
+    "mad_ns_per_op": 0.13543701171875
+  },
+  {
+    "checksum": "6391162748111713972",
+    "kernel": "pipeline_result",
+    "kind": "runtime",
+    "operations": 3276800,
+    "samples_ns": [
+      50677700,
+      52111000,
+      51275700,
+      50828400,
+      59871100,
+      50593900,
+      50918900
+    ],
+    "threshold": 128,
+    "compiler": "ldc2",
+    "median_ns_per_op": 15.539215087890625,
+    "min_ns_per_op": 15.440032958984375,
+    "max_ns_per_op": 18.271209716796875,
+    "mad_ns_per_op": 0.09918212890625
+  },
+  {
+    "checksum": "6391162748111713972",
+    "kernel": "pipeline_status",
+    "kind": "runtime",
+    "operations": 3276800,
+    "samples_ns": [
+      23868600,
+      24288600,
+      23926100,
+      23733200,
+      23391600,
+      23509900,
+      23943900
+    ],
+    "threshold": 128,
+    "compiler": "ldc2",
+    "median_ns_per_op": 7.28411865234375,
+    "min_ns_per_op": 7.1385498046875,
+    "max_ns_per_op": 7.41229248046875,
+    "mad_ns_per_op": 0.04132080078125
+  },
+  {
+    "checksum": "18607673872220160",
+    "kernel": "result_small",
+    "kind": "runtime",
+    "operations": 4980736,
+    "samples_ns": [
+      51534000,
+      50547300,
+      51387600,
+      60995400,
+      51672000,
+      51052000,
+      50851300
+    ],
+    "threshold": 256,
+    "compiler": "ldc2",
+    "median_ns_per_op": 10.317270379317435,
+    "min_ns_per_op": 10.148560373406662,
+    "max_ns_per_op": 12.24626239977385,
+    "mad_ns_per_op": 0.0673796001233562
+  },
+  {
+    "checksum": "18607673872220160",
+    "kernel": "status_out_small",
+    "kind": "runtime",
+    "operations": 4980736,
+    "samples_ns": [
+      21610900,
+      21611700,
+      21874300,
+      21484500,
+      21232400,
+      21324400,
+      21144200
+    ],
+    "threshold": 256,
+    "compiler": "ldc2",
+    "median_ns_per_op": 4.313519126490543,
+    "min_ns_per_op": 4.245195890727796,
+    "max_ns_per_op": 4.391780652497944,
+    "mad_ns_per_op": 0.03214384380139812
+  },
+  {
+    "checksum": "18607673872220160",
+    "kernel": "status_ref_small",
+    "kind": "runtime",
+    "operations": 4980736,
+    "samples_ns": [
+      21371600,
+      21454300,
+      21219600,
+      21864700,
+      21359100,
+      21298900,
+      21503400
+    ],
+    "threshold": 256,
+    "compiler": "ldc2",
+    "median_ns_per_op": 4.290851793791118,
+    "min_ns_per_op": 4.260334215666118,
+    "max_ns_per_op": 4.389853226511102,
+    "mad_ns_per_op": 0.01660397178248374
+  },
+  {
+    "checksum": "12976404147732480",
+    "kernel": "result_large",
+    "kind": "runtime",
+    "operations": 3473408,
+    "samples_ns": [
+      46117500,
+      46214900,
+      46928700,
+      46479000,
+      45775800,
+      45845000,
+      45798500
+    ],
+    "threshold": 256,
+    "compiler": "ldc2",
+    "median_ns_per_op": 13.277305746978184,
+    "min_ns_per_op": 13.178929742777123,
+    "max_ns_per_op": 13.51085159013856,
+    "mad_ns_per_op": 0.0918406360554247
+  },
+  {
+    "checksum": "12976404147732480",
+    "kernel": "status_out_large",
+    "kind": "runtime",
+    "operations": 3473408,
+    "samples_ns": [
+      29995100,
+      29823400,
+      30017700,
+      30931800,
+      31277800,
+      29601700,
+      29846400
+    ],
+    "threshold": 256,
+    "compiler": "ldc2",
+    "median_ns_per_op": 8.63563969450177,
+    "min_ns_per_op": 8.52237917342276,
+    "max_ns_per_op": 9.00493117998231,
+    "mad_ns_per_op": 0.04943271852889275
+  },
+  {
+    "checksum": "12976404147732480",
+    "kernel": "status_ref_large",
+    "kind": "runtime",
+    "operations": 3473408,
+    "samples_ns": [
+      18643000,
+      18450300,
+      18525700,
+      19046300,
+      19242100,
+      18278700,
+      18331200
+    ],
+    "threshold": 256,
+    "compiler": "ldc2",
+    "median_ns_per_op": 5.333580161040684,
+    "min_ns_per_op": 5.262468445975825,
+    "max_ns_per_op": 5.539832924896816,
+    "mad_ns_per_op": 0.055996876842571375
+  },
+  {
+    "checksum": "17873160429895680",
+    "kernel": "pipeline_result",
+    "kind": "runtime",
+    "operations": 4784128,
+    "samples_ns": [
+      48920200,
+      48820600,
+      48611000,
+      49443600,
+      49701400,
+      47986000,
+      48475900
+    ],
+    "threshold": 256,
+    "compiler": "ldc2",
+    "median_ns_per_op": 10.20470188088613,
+    "min_ns_per_op": 10.030250026755137,
+    "max_ns_per_op": 10.388810667273116,
+    "mad_ns_per_op": 0.07205074780607923
+  },
+  {
+    "checksum": "17873160429895680",
+    "kernel": "pipeline_status",
+    "kind": "runtime",
+    "operations": 4784128,
+    "samples_ns": [
+      13434700,
+      13367000,
+      13653900,
+      12955900,
+      13075400,
+      13235500,
+      13249900
+    ],
+    "threshold": 256,
+    "compiler": "ldc2",
+    "median_ns_per_op": 2.7695538246468323,
+    "min_ns_per_op": 2.708100619381421,
+    "max_ns_per_op": 2.853999725759846,
+    "mad_ns_per_op": 0.03647477659460607
+  },
+  {
+    "error_bytes": 8,
+    "kind": "size",
+    "payload": "ulong",
+    "result_bytes": 16,
+    "status_carrier_bytes": 24,
+    "value_bytes": 8,
+    "compiler": "ldc2"
+  },
+  {
+    "error_bytes": 8,
+    "kind": "size",
+    "payload": "block256",
+    "result_bytes": 264,
+    "status_carrier_bytes": 272,
+    "value_bytes": 256,
+    "compiler": "ldc2"
+  },
+  {
+    "error_bytes": 8,
+    "kind": "size",
+    "payload": "void",
+    "result_bytes": 12,
+    "value_bytes": 0,
+    "compiler": "ldc2"
+  },
+  {
+    "error_bytes": 8,
+    "kind": "size",
+    "payload": "instrumented_counted",
+    "result_bytes": 280,
+    "status_carrier_bytes": 280,
+    "value_bytes": 264,
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 0,
+    "kind": "copies",
+    "operation": "factory_temporary",
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "result_copy",
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "value",
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "map",
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "match",
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "assignment",
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 0,
+    "kind": "copies",
+    "operation": "take",
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "factory_lvalue",
+    "compiler": "ldc2"
+  },
+  {
+    "copies": 1,
+    "kind": "copies",
+    "operation": "status_out_assignment",
+    "compiler": "ldc2"
+  }
+]

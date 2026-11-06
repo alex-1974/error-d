@@ -24,3 +24,14 @@ The committed desktop-x86_64 snapshot has full samples, metadata, symbols and
 disassembly. [Interpretation and limitations](../docs/performance.md) accompany it.
 CI uses a short smoke invocation with no timing thresholds; performance ratios
 are evidence, not correctness assertions.
+
+## Before/after replay
+
+`run.py --source-revision v0.2.0` compiles the old source snapshot with the same
+current workload without changing the checkout. `compare.py` links renamed
+baseline/current modules and interleaves adjacent variants in one timed process.
+It uses identical operation counts across both implementations and checks all
+family checksums. Regenerate the comparison with `summarize_comparison.py`.
+See [method and results](../docs/performance-optimization.md), including slower
+cases and the ABI/rebuild requirement. CI fetches the baseline tag for smoke
+verification and never asserts timing ratios.

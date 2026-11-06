@@ -5,7 +5,9 @@ It includes baseline reproductions, four concrete findings, implementation
 corrections, source-copy restrictions and an updated review of every trusted
 operation. Passing compiler checks alone did not reveal those adversarial cases.
 
-The implementation uses private SumType storage, no custom raw union. Qualified
+General payloads use private SumType storage. The v0.3 pointer-free trivial
+subset uses a private data-only union with checked copy access; its predicate,
+trusted helpers and ABI implications are audited in [ADR 0005](decisions/0005-trivial-storage.md). Qualified
 copying, safe cleanup/transfer, release-mode checked access, @mustuse and
 DIP1000 remain compiler/test-checked for the supported operations. This is not a
 formal proof or an independent audit; see the review for the precise boundaries.

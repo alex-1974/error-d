@@ -46,3 +46,6 @@ Post-v0.1 amendment: [adversarial review](../security-review.md) demonstrates
 that whole-SumType copying and union-contained relocation need additional
 restrictions. See the corrected branch-selecting copy path, source-copy safety
 policy, lifetime guard and rejected payload move hooks.
+
+v0.3 amendment: [ADR 0005](0005-trivial-storage.md) introduces a narrowly selected
+pointer-free trivial storage specialization. General payloads retain this backend.

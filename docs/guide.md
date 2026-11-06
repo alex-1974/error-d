@@ -175,5 +175,16 @@ ownership/thread guarantees are not v0.1 promises. See the decision records for
 rationale and the actual verification scope.
 
 See the [post-v0.1 safety review](security-review.md) for baseline reproductions
-and changed guarantees, and [cost measurements](performance.md) for the measured
+and changed guarantees, and [performance comparison](performance-optimization.md) for the measured
 compiler-dependent overhead. v0.1.0 should be replaced by the corrected release.
+
+## v0.3 optimization boundary
+
+Eligible unqualified pointer-free values use a private trivial storage path.
+Pointers, slices, resources, custom copy/assignment hooks, alias-this and
+qualified payload fields keep the general backend and its v0.2 guarantees.
+Callback behavior, checked access and explicit take semantics are unchanged.
+The representation and calling convention can change: cleanly rebuild all D
+consumers against the same version. The separate versioned C adapter is not
+affected. Inactive bytes need not be initialized or erased; do not serialize or
+compare Result as raw bytes. See [ADR 0005](decisions/0005-trivial-storage.md).
