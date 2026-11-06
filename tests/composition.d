@@ -11,6 +11,10 @@ void main() {
     auto fail=R.failure(2);
     auto skipped=fail.map((int x) { ++calls; return x; });
     check(calls==0 && skipped.error()==2);
+    auto skippedChain=fail.andThen((int x) { ++calls; return R.success(x); });
+    check(calls==0 && skippedChain.error()==2);
+    auto unchanged=r.mapError((int e) { ++calls; return e; });
+    check(calls==0 && unchanged.value()==4);
     auto translated=fail.mapError((int x)=>cast(long)(x+10));
     check(translated.error()==12);
     check(R.init.map((int x) { ++calls; return x; }).isEmpty);

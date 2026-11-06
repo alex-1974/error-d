@@ -15,6 +15,12 @@ struct Pointer {int* p;}
 struct NestedPointers {Pointer[2] items;}
 struct NestedAssignment {CustomAssign item;}
 struct WideError {ulong[64] words;}
+struct Owner {
+    int* live;
+    @disable this(this);
+    this(int* count) @safe nothrow {live=count;++*live;}
+    ~this() scope @safe nothrow {if(live)--*live;}
+}
 void main() @safe {
     alias R=Result!(Record,Error);
     static assert(__traits(isPOD,R));
@@ -55,6 +61,14 @@ void main() @safe {
     auto voidWide=Result!(void,WideError).success();
     check(voidWide.hasValue);
     voidWide.takeValue();check(voidWide.isEmpty);
+    int* live=new int;
+    {
+        auto owned=Result!(uint,Code).success(1).map((uint n)=>Owner(live));
+        check(*live==1);
+        auto resource=owned.takeValue();
+        check(owned.isEmpty && *live==1);
+    }
+    check(*live==0);
     auto zero=Result!(int[0],Code).success((int[0]).init);
     check(zero.value().length==0);
 }

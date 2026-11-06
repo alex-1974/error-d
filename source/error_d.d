@@ -432,7 +432,9 @@ if ((is(T == void) || storable!T) && storable!E)
         alias Out = Result!(U, typeof(error()));
         static if (usePlain && Out.usePlain && !is(U == void))
         {
-            static if (is(T == void))
+            static if (is(Out == typeof(this)))
+                return hasError ? this : hasValue ? Out.success(transform(value())) : Out.init;
+            else static if (is(T == void))
                 return hasValue ? Out.success(transform()) : hasError ? Out.failure(error()) : Out.init;
             else return hasValue ? Out.success(transform(value())) : hasError ? Out.failure(error()) : Out.init;
         }
@@ -465,7 +467,9 @@ if ((is(T == void) || storable!T) && storable!E)
         alias Out = Result!(V, F);
         static if (usePlain && Out.usePlain)
         {
-            static if (is(T == void))
+            static if (is(Out == typeof(this)))
+                return hasValue ? this : hasError ? Out.failure(transform(error())) : Out.init;
+            else static if (is(T == void))
                 return hasError ? Out.failure(transform(error())) : hasValue ? Out.success() : Out.init;
             else return hasError ? Out.failure(transform(error())) : hasValue ? Out.success(value()) : Out.init;
         }
@@ -490,7 +494,13 @@ if ((is(T == void) || storable!T) && storable!E)
                       "andThen requires the same error type; use mapError explicitly");
         static if (usePlain && Out.usePlain)
         {
-            static if (is(T == void))
+            static if (is(Out == typeof(this)))
+            {
+                static if (is(T == void))
+                    return hasError ? this : hasValue ? next() : Out.init;
+                else return hasError ? this : hasValue ? next(value()) : Out.init;
+            }
+            else static if (is(T == void))
                 return hasValue ? next() : hasError ? Out.failure(error()) : Out.init;
             else return hasValue ? next(value()) : hasError ? Out.failure(error()) : Out.init;
         }

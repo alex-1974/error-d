@@ -15,6 +15,8 @@ jobs:
             executable: ldc2
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
       - uses: dlang-community/setup-dlang@5d239e99bc553874d9362e7e6aeeac9454b6789f # v2
         with:
           compiler: ${{ matrix.compiler }}
@@ -24,3 +26,4 @@ jobs:
       - run: python3 probes/ownership/run.py --compiler ${{ matrix.executable }}
       - run: python3 probes/review/run.py --compiler ${{ matrix.executable }}
       - run: python3 benchmarks/run.py --compiler ${{ matrix.executable }} --samples 1 --target-ms 1 --size 1024 --output /tmp/error-d-benchmark-smoke
+      - run: python3 benchmarks/compare.py --compiler ${{ matrix.executable }} --samples 1 --target-ms 1 --size 1024 --output /tmp/error-d-paired-smoke
