@@ -35,6 +35,7 @@ else:
     source_revision=None
     source_contents=(root/'source/error_d.d').read_bytes()
 metadata={
+    'protocol':'v2-inlinable-callbacks',
     'utc_recorded_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
     'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),
     'source_revision':source_revision,
@@ -66,6 +67,27 @@ for compiler in args.compiler or ['dmd','ldc2']:
         # Separate object, no LTO, no-inline entry functions: retain API boundary.
         obj=work/'kernels.o'
         run([*base,'-c','-of='+str(obj),root/'benchmarks/kernels.d'],work)
+        if compiler == 'ldc2':
+            # Audit actual optimized attributes: an outer noinline pragma can
+            # otherwise silently propagate to nested callback declarations.
+            ir_file=work/'kernels.ll'
+            run([*base,'-c','-output-ll','-of='+str(ir_file),root/'benchmarks/kernels.d'],work)
+            ir=ir_file.read_text()
+            attrs=dict(re.findall(r'^attributes #(\d+) = \{(.*)\}',ir,re.M))
+            definitions=re.findall(r'^define ([^\n]+) \{\n(.*?)^\}',ir,re.M|re.S)
+            audited={}
+            for label,marker in [('entry','@pipeline_result('),('transform','9transform'),('next','4next')]:
+                matches=[(header,body) for header,body in definitions if marker in header]
+                if len(matches)!=1:raise RuntimeError('missing or ambiguous IR definition: '+label)
+                header,body=matches[0]
+                attribute=attrs[re.search(r'#(\d+)',header).group(1)]
+                expected='noinline' if label=='entry' else 'alwaysinline'
+                forbidden='alwaysinline' if label=='entry' else 'noinline'
+                if expected not in attribute.split() or forbidden in attribute.split():
+                    raise RuntimeError('benchmark inline boundary changed: '+label+' '+attribute)
+                audited[label]={'attributes':attribute,'calls':re.findall(r'^.*\bcall\b.*$',body,re.M)}
+            (args.output/'ldc2-kernels.ll').write_text(ir)
+            (args.output/'ldc2-inline-audit.json').write_text(json.dumps(audited,indent=2)+'\n')
         disassembly=run(['objdump','-drwC',obj],work)
         (args.output/(compiler+'-kernels.asm')).write_text(disassembly)
         symbols=run(['nm','-S','--defined-only',obj],work)

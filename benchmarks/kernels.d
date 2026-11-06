@@ -50,10 +50,19 @@ private Small localResult(uint x,uint threshold) @safe pure nothrow @nogc {
 }
 pragma(inline, false)
 extern(C) Small pipeline_result(uint x,uint threshold) @safe pure nothrow @nogc {
-    return localResult(x,threshold)
-        .map((ulong value)=>value ^ 0x123456789abcdef0UL)
-        .andThen((ulong value)=> (value & 15)==0
-            ? Small.failure(DomainError(2,x)) : Small.success(value*3));
+    // The outer producer stays noinline to preserve the API boundary. Its
+    // nested callbacks must override that inherited attribute: otherwise the
+    // benchmark measures deliberately opaque callbacks against fused code.
+    static ulong transform(ulong value) @safe pure nothrow @nogc {
+        pragma(inline, true);
+        return value ^ 0x123456789abcdef0UL;
+    }
+    Small next(ulong value) @safe pure nothrow @nogc {
+        pragma(inline, true);
+        return (value & 15)==0
+            ? Small.failure(DomainError(2,x)) : Small.success(value*3);
+    }
+    return localResult(x,threshold).map(&transform).andThen(&next);
 }
 pragma(inline, false)
 extern(C) bool pipeline_status(uint x,uint threshold, out ulong value, out DomainError error) @safe pure nothrow @nogc {

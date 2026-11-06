@@ -77,7 +77,14 @@ private struct PlainStorage(Good, Bad)
 {
     private union Data { Good good; Bad bad; }
     private Data data = Data.init;
-    private ubyte tag;
+    // Use the existing alignment slot, rather than a byte followed by padding.
+    // Fully defining the returned state word avoids partial-store/wide-load
+    // dependencies on DMD without enlarging the representation.
+    static if (Data.alignof >= size_t.alignof) private alias Tag = size_t;
+    else static if (Data.alignof >= uint.alignof) private alias Tag = uint;
+    else static if (Data.alignof >= ushort.alignof) private alias Tag = ushort;
+    else private alias Tag = ubyte;
+    private Tag tag;
 }
 
 private extern(C) alias Abort = noreturn function() pure nothrow @nogc;

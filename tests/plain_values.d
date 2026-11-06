@@ -1,5 +1,6 @@
 module test_plain_values;
 import error_d;
+import std.meta : AliasSeq;
 import core.stdc.stdlib : abort;
 void check(bool ok) @safe nothrow @nogc { if(!ok)abort(); }
 enum Code : uint {bad=1, overflow=2}
@@ -22,6 +23,19 @@ struct Owner {
     ~this() scope @safe nothrow {if(live)--*live;}
 }
 void main() @safe {
+    // The state word fills existing alignment padding, without growing Result.
+    static foreach(T; AliasSeq!(ubyte,ushort,uint,ulong)) {
+        static assert(Result!(T,T).sizeof == 2*T.sizeof);
+        static assert(Result!(T,T).alignof == T.alignof);
+        {
+            alias Narrow=Result!(T,T);
+            auto state=Narrow.init;check(state.isEmpty);
+            state=Narrow.success(cast(T)7);check(state.hasValue && state.value()==7);
+            auto copy=state;check(copy.takeValue()==7 && copy.isEmpty);
+            state=Narrow.failure(cast(T)9);check(state.hasError && state.error()==9);
+            check(state.takeError()==9 && state.isEmpty);
+        }
+    }
     alias R=Result!(Record,Error);
     static assert(__traits(isPOD,R));
     static assert(!__traits(isPOD,Result!(Pointer,int)));

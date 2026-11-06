@@ -75,7 +75,7 @@ metadata=dict(utc_recorded_at=datetime.datetime.now(datetime.timezone.utc).isofo
     base_driver_sha256=digest((root/'benchmarks/runtime.d').read_text()),
     paired_driver_sha256=digest(driver),platform=platform.platform(),logical_cpu=cpu,
     samples=args.samples,target_ms=args.target_ms,seed=args.seed,input_count=args.size,
-    cpuinfo=run(['lscpu'],root),compilers={})
+    protocol='v2-inlinable-callbacks',cpuinfo=run(['lscpu'],root),compilers={})
 records=[]
 for compiler in args.compiler or ['dmd','ldc2']:
     flags=['-de','-release','-preview=dip1000','-boundscheck=on']+(['-O','-inline'] if compiler=='dmd' else ['-O3'])
