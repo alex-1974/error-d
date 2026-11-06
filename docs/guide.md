@@ -188,3 +188,12 @@ The representation and calling convention can change: cleanly rebuild all D
 consumers against the same version. The separate versioned C adapter is not
 affected. Inactive bytes need not be initialized or erased; do not serialize or
 compare Result as raw bytes. See [ADR 0005](decisions/0005-trivial-storage.md).
+
+## v0.4 state representation
+
+The trivial backend fills the existing alignment slot with the state word.
+This reduces DMD return overhead without increasing size or changing ownership.
+The private representation differs from v0.3; no cross-version binary contract
+is provided. There are currently no external consumers; the integration
+consumers in this repository are fixtures. See the
+[matched performance report and pipeline benchmark correction](performance-v04.md).

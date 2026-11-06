@@ -1,5 +1,9 @@
 # v0.3 performance optimization
 
+> Pipeline measurement note: these historical snapshots used opaque callbacks.
+> See the [v0.4 correction and matched comparison](performance-v04.md) before
+> interpreting pipeline overhead or comparing these rows with newer runs.
+
 Tracking: #17. Baseline is v0.2.0; the candidate adds the narrowly selected
 pointer-free storage path documented in [ADR 0005](decisions/0005-trivial-storage.md).
 

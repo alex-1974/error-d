@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.0 — 2026-11-06
+
+- Fill existing trivial-storage alignment padding with the state word, reducing
+  DMD partial-store/wide-load overhead without growing Result.
+- Preserve safety, payload eligibility and ownership behavior; test each tag width.
+- Correct inherited noinline attributes in pipeline benchmark callbacks and add
+  an automated LLVM attribute audit. Earlier pipeline data measures opaque callbacks.
+- Retain matched v0.3/current raw comparisons and report mixed/slower cases in
+  [the performance report](docs/performance-v04.md).
+
+Source API unchanged; the private tag representation is not binary compatible
+with v0.3. There are no external consumers yet, only in-repository fixtures.
+
 ## 0.3.0 — 2026-11-06
 
 Performance optimization of trivial pointer-free results; general payloads keep

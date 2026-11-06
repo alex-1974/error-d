@@ -1,5 +1,9 @@
 # v0.2 Result cost study
 
+> Pipeline measurement note: these historical snapshots used opaque callbacks.
+> See the [v0.4 correction and matched comparison](performance-v04.md) before
+> interpreting pipeline overhead or comparing these rows with newer runs.
+
 This is the preserved v0.2 study. See the [v0.3 comparison](performance-optimization.md) for the optimized implementation.
 
 Tracking: #16. This is a synthetic comparison of the corrected implementation,

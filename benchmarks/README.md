@@ -35,3 +35,12 @@ family checksums. Regenerate the comparison with `summarize_comparison.py`.
 See [method and results](../docs/performance-optimization.md), including slower
 cases and the ABI/rebuild requirement. CI fetches the baseline tag for smoke
 verification and never asserts timing ratios.
+
+## Corrected callback protocol (v0.4)
+
+The outer producer remains noinline; nested pipeline callbacks explicitly allow
+inlining. Earlier snapshots inherited noinline in callbacks. `run.py` audits
+optimized LDC attributes and retains LLVM IR plus JSON evidence. Both sides of
+`compare.py --baseline v0.3.0` use the corrected kernel; see the
+[matched report](../docs/performance-v04.md). Do not count harness corrections
+as library speedups. Historical artifacts and their original metadata are kept.

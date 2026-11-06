@@ -15,7 +15,7 @@ extraction, exhaustive matching and error/success composition. `@mustuse` catche
 implicitly discarded results. Empty is neither success nor a domain failure.
 
 See the [API reference](docs/api.md), [safety review](docs/security-review.md)
-and [performance comparison](docs/performance-optimization.md). Read the [user guide](docs/guide.md) for state, ownership, compiler attributes,
+and [performance comparison and benchmark correction](docs/performance-v04.md). Read the [user guide](docs/guide.md) for state, ownership, compiler attributes,
 thread and binary-boundary contracts. See [examples](examples/consumer.d) for
 cross-library error composition and [decisions](docs/decisions) for the rationale.
 
@@ -34,7 +34,7 @@ compile rejection, expected fatal access, threads and D/C library consumers.
 
 ## Status
 
-Current release: v0.3.0. See the [changelog](CHANGELOG.md),
+Current release: v0.4.0. See the [changelog](CHANGELOG.md),
 [milestones](https://github.com/alex-1974/error-d/milestones) and
 [issues](https://github.com/alex-1974/error-d/issues).
 
