@@ -27,3 +27,18 @@ jobs:
       - run: python3 probes/review/run.py --compiler ${{ matrix.executable }}
       - run: python3 benchmarks/run.py --compiler ${{ matrix.executable }} --samples 1 --target-ms 1 --size 1024 --output /tmp/error-d-benchmark-smoke
       - run: python3 benchmarks/compare.py --compiler ${{ matrix.executable }} --samples 1 --target-ms 1 --size 1024 --output /tmp/error-d-paired-smoke
+  documentation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dlang-community/setup-dlang@5d239e99bc553874d9362e7e6aeeac9454b6789f # v2
+        with:
+          compiler: dmd-2.111.0
+      - run: sudo apt-get update && sudo apt-get install -y libssl-dev
+      - run: python3 tools/build_docs.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ddox-documentation
+          path: build/ddox/
+          if-no-files-found: error
+          retention-days: 30

@@ -1,4 +1,32 @@
-/** Typed value-or-error results. See docs/guide.md for ownership and empty states. */
+/**
+Typed success/failure values shared by independently developed D libraries.
+
+Each library defines its own error type $(D E), while $(D Result!(T, E)) provides
+checked access, explicit extraction and composition. A default result is empty;
+it is neither success nor a domain failure. Wrong-branch access aborts in all
+build modes. Results are marked $(D @mustuse).
+
+Payload cleanup and transfer must support $(D @safe nothrow); elaborate move
+hooks are rejected. Other attributes are inferred from payloads and callbacks.
+Copying a payload with a reference copy constructor is $(D @system).
+A result does not provide synchronization or a stable cross-version binary ABI.
+
+See_Also:
+$(LINK2 https://github.com/alex-1974/error-d/blob/main/docs/guide.md, User guide),
+$(LINK2 https://github.com/alex-1974/error-d/blob/main/docs/api.md, Complete API contracts).
+The complete API also covers conditional declarations that DDox may omit.
+
+Examples:
+---
+import error_d;
+enum ParseError { invalidDigit }
+alias R = Result!(int, ParseError);
+auto result = R.success(21).map((int n) => n * 2);
+assert(result.value() == 42);
+auto value = result.takeValue();
+assert(value == 42 && result.isEmpty);
+---
+*/
 module error_d;
 
 import core.attribute : mustuse;
@@ -11,7 +39,12 @@ import std.traits : CopyTypeQualifiers, FieldTypeTuple, FunctionAttribute,
     hasElaborateDestructor, hasElaborateMove, hasIndirections, hasNested,
     isAssignable, isCopyable, isFloatingPoint, isIntegral, isSomeChar;
 
-enum ResultState { empty, success, failure }
+/// The three observable states; empty is not a domain failure.
+enum ResultState {
+    empty,   /// No active value or error, including default construction and after take.
+    success, /// A success value is available, or void success was constructed.
+    failure  /// A domain error is available.
+}
 
 private struct Empty {}
 private struct Success(T) { T payload; }
@@ -101,11 +134,32 @@ private template IsResult(R)
     enum IsResult = is(R == Result!(V, F), V, F);
 }
 
-/// A result is empty by default. Only hasValue permits reading value().
+/**
+A checked value-or-error carrier, empty by default.
+
+Use $(D Result!(T, E).success(value)) or $(D .failure(error)) to construct an
+outcome. For $(D T == void), use $(D .success()) without a payload.
+Queries do not consume; $(D value), $(D error), matching and composition copy.
+$(D takeValue) and $(D takeError) transfer the selected payload and leave empty.
+Operations requiring unavailable copies are rejected at compile time.
+
+Const access preserves payload qualifiers. No getter exposes private storage
+by reference. Callbacks are scope arguments and must not return by reference.
+Copying does not deep-copy referenced objects or add thread synchronization.
+
+The representation is private. Inactive bytes are unspecified; raw serialization,
+bytewise equality, erasure and a stable ABI are not supported contracts.
+
+Params:
+    T = Success payload type, or $(D void).
+    E = Non-void domain error type owned by the producing library.
+*/
 @mustuse struct Result(T, E)
 if ((is(T == void) || storable!T) && storable!E)
 {
+    /// The declared success payload type, possibly void.
     alias ValueType = T;
+    /// The declared domain error type.
     alias ErrorType = E;
 
     static if (is(T == void)) private alias Good = VoidSuccess;
@@ -130,6 +184,7 @@ if ((is(T == void) || storable!T) && storable!E)
         // Prevent moving an owner out of its own destructor, including implicit
         // compiler moves. scope annotations preserve @safe core.lifetime.move
         // for ordinary owners on the supported compiler baselines.
+        /// Compiler move hook; aborts when moving from or into a dying owner.
         void opPostMove(scope ref const Result old) @safe pure nothrow @nogc
         {
             if (destroying || old.destroying) badAccess();
@@ -194,6 +249,11 @@ if ((is(T == void) || storable!T) && storable!E)
     static if (is(T == void))
     {
         pragma(inline, true)
+        /** Construct success: success() for void, success(value) for other value types.
+        The conditional value overload copies an lvalue or moves a transferable
+        temporary. DDox may display only the void overload's signature here;
+        both forms are part of the API. Neither constructs a domain error.
+        */
         static Result success()()
         {
             static if (usePlain) return plainSuccess();
@@ -203,6 +263,9 @@ if ((is(T == void) || storable!T) && storable!E)
     else
     {
         pragma(inline, true)
+        /** Construct success from a value. Lvalues copy; transferable temporaries move.
+        Params: value = Success payload to store.
+        */
         static Result success()(T value)
         {
             static if (usePlain) return plainSuccess(value);
@@ -212,6 +275,10 @@ if ((is(T == void) || storable!T) && storable!E)
         }
     }
     pragma(inline, true)
+    /** Construct failure from a domain error.
+    Params: error = Error to store; lvalues copy and transferable temporaries move.
+    Returns: A result in the failure state.
+    */
     static Result failure()(E error)
     {
         static if (usePlain) return plainFailure(error);
@@ -273,6 +340,7 @@ if ((is(T == void) || storable!T) && storable!E)
     }
 
     pragma(inline, true)
+    /// Inspect the active branch. A dying destructible owner reports empty.
     ResultState state() const @safe pure nothrow @nogc
     {
         static if (hasElaborateDestructor!Storage)
@@ -285,13 +353,20 @@ if ((is(T == void) || storable!T) && storable!E)
         });
     }
     pragma(inline, true)
+    /// True exactly for success, including void success.
     bool hasValue() const @safe pure nothrow @nogc { return state == ResultState.success; }
     pragma(inline, true)
+    /// True exactly for domain failure.
     bool hasError() const @safe pure nothrow @nogc { return state == ResultState.failure; }
     pragma(inline, true)
+    /// True when neither a success nor a failure is active.
     bool isEmpty() const @safe pure nothrow @nogc { return state == ResultState.empty; }
 
-    /// Non-consuming copy. Const payload indirections stay const.
+    /** Return a non-consuming success copy, preserving const indirections.
+    For void success, only check the state. Aborts unless hasValue is true.
+    A non-void payload must be copyable; use takeValue for exclusive ownership.
+    Reference-copy payloads make this operation system-only.
+    */
     pragma(inline, true)
     auto value(this Self)()
     {
@@ -312,6 +387,10 @@ if ((is(T == void) || storable!T) && storable!E)
         }
     }
     pragma(inline, true)
+    /** Return a non-consuming error copy, preserving const indirections.
+    Aborts unless hasError is true. Requires a copyable error; use takeError
+    for exclusive ownership. Reference-copy payloads require system code.
+    */
     auto error(this Self)()
     {
         requireLive();
@@ -327,7 +406,11 @@ if ((is(T == void) || storable!T) && storable!E)
         }
     }
 
-    /// Prepare rhs before touching this; payload opAssign is never called.
+    /** Replace the outcome after preparing rhs; payload opAssign is never called.
+    The new state is committed before retired payload destruction. A destructor
+    may reenter and replace this result without its update being overwritten.
+    Params: rhs = Prepared replacement, copied from an lvalue or moved from a temporary.
+    */
     void opAssign(Result rhs)
     {
         requireLive();
@@ -347,7 +430,11 @@ if ((is(T == void) || storable!T) && storable!E)
         // retired is destroyed here, after commit, never through active storage.
     }
 
-    /// Transfer selected payload and leave this result empty.
+    /** Transfer success and leave this result empty.
+    Aborts unless hasValue is true. For void success, reset to empty without
+    returning a value. Only available on a mutable result; no copy is required
+    for movable unqualified payloads. Qualified payloads follow their copy rules.
+    */
     auto takeValue()()
     {
         requireLive();
@@ -374,6 +461,10 @@ if ((is(T == void) || storable!T) && storable!E)
             else return move(owned.get!Good.payload);
         }
     }
+    /** Transfer the domain error and leave this result empty.
+    Aborts unless hasError is true. Requires a mutable result; qualified payloads
+    follow their copy rules. Extraction does not promise bytewise erasure.
+    */
     auto takeError()()
     {
         requireLive();
@@ -401,7 +492,14 @@ if ((is(T == void) || storable!T) && storable!E)
         return move(owned);
     }
 
-    /// Exhaustive copy-based match; callbacks never borrow private storage.
+    /** Handle all three states using copies; callbacks never borrow private storage.
+    All handlers must return the same type (possibly void), without ref returns.
+    Params:
+        onSuccess = Called with the copied value, or no argument for void success.
+        onFailure = Called with the copied domain error.
+        onEmpty = Called without arguments for the empty state.
+    Returns: The selected handler result. The source is not consumed.
+    */
     pragma(inline, true)
     auto match(SuccessFn, FailureFn, EmptyFn, this Self)(scope SuccessFn onSuccess, scope FailureFn onFailure, scope EmptyFn onEmpty)
     {
@@ -429,7 +527,11 @@ if ((is(T == void) || storable!T) && storable!E)
         }
     }
 
-    /// Transform a copied success value, preserving failure and empty.
+    /** Transform a success copy, preserving copied failure and empty.
+    Params: transform = Called with the copied value, or no argument for void success.
+    Returns: A Result with the callback return type (possibly void) as success type.
+        Its error type follows this result's copied error qualifiers.
+    */
     pragma(inline, true)
     auto map(Fn, this Self)(scope Fn transform)
     {
@@ -463,7 +565,10 @@ if ((is(T == void) || storable!T) && storable!E)
         }
     }
 
-    /// Explicitly translate a copied error, preserving success and empty.
+    /** Translate a copied error into another domain, preserving success and empty.
+    Params: transform = Called with the copied error; must return a non-void error type.
+    Returns: A Result using the translated error type and copied success qualifiers.
+    */
     pragma(inline, true)
     auto mapError(Fn, this Self)(scope Fn transform)
     {
@@ -489,7 +594,12 @@ if ((is(T == void) || storable!T) && storable!E)
         }
     }
 
-    /// Chain a copied success into another Result with the same error type.
+    /** Chain a success copy into another Result with exactly the same copied error type.
+    Use mapError explicitly when crossing error domains. Empty and copied failures
+    propagate without calling next. The source is not consumed.
+    Params: next = Returns a Result, taking a copied value or no argument for void success.
+    Returns: The callback Result type, preserving failure and empty as appropriate.
+    */
     pragma(inline, true)
     auto andThen(Fn, this Self)(scope Fn next)
     {

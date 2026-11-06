@@ -1,4 +1,7 @@
-# v0.3 public API
+# Public API (v0.4)
+
+The [generated DDox reference](documentation.md) complements this complete
+operation inventory, including declarations the generator may omit.
 
 Import `error_d`. `ResultState` has `empty`, `success`, `failure`.
 

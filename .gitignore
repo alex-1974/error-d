@@ -13,3 +13,5 @@ __dummy.html
 core
 
 __pycache__/
+
+/build/
