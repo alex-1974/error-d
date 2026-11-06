@@ -15,6 +15,7 @@ import tempfile
 root=pathlib.Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser()
 parser.add_argument('--compiler',action='append',choices=['dmd','ldc2'])
+parser.add_argument('--source-revision', help='Benchmark source/error_d.d from this local Git revision')
 parser.add_argument('--output',type=pathlib.Path,default=root/'benchmarks/results/local')
 parser.add_argument('--samples',type=int,default=7)
 parser.add_argument('--target-ms',type=int,default=50)
@@ -27,10 +28,18 @@ args.output.mkdir(parents=True,exist_ok=True)
 # Pin benchmark processes, not the parent shell or the user's system policy.
 cpu=min(os.sched_getaffinity(0))
 all_records=[]
+if args.source_revision:
+    source_revision=subprocess.check_output(['git','rev-parse',args.source_revision+'^{commit}'],cwd=root,text=True).strip()
+    source_contents=subprocess.check_output(['git','show',source_revision+':source/error_d.d'],cwd=root)
+else:
+    source_revision=None
+    source_contents=(root/'source/error_d.d').read_bytes()
 metadata={
     'utc_recorded_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
     'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),
-    'source_sha256':hashlib.sha256((root/'source/error_d.d').read_bytes()).hexdigest(),
+    'source_revision':source_revision,
+    'source_label':args.source_revision or 'working-tree',
+    'source_sha256':hashlib.sha256(source_contents).hexdigest(),
     'working_tree_status':subprocess.check_output(['git','status','--short'],cwd=root,text=True),
     'kernel_sha256':hashlib.sha256((root/'benchmarks/kernels.d').read_bytes()).hexdigest(),
     'driver_sha256':hashlib.sha256((root/'benchmarks/runtime.d').read_bytes()).hexdigest(),
@@ -51,7 +60,9 @@ for compiler in args.compiler or ['dmd','ldc2']:
     metadata['compilers'][compiler]={'version':run([compiler,'--version'],root),'flags':flags}
     with tempfile.TemporaryDirectory(prefix='error-d-cost-') as directory:
         work=pathlib.Path(directory)
-        base=[compiler,*flags,'-I'+str(root/'source'),'-I'+str(root/'benchmarks')]
+        source_dir=work/'source';source_dir.mkdir()
+        source_file=source_dir/'error_d.d';source_file.write_bytes(source_contents)
+        base=[compiler,*flags,'-I'+str(source_dir),'-I'+str(root/'benchmarks')]
         # Separate object, no LTO, no-inline entry functions: retain API boundary.
         obj=work/'kernels.o'
         run([*base,'-c','-of='+str(obj),root/'benchmarks/kernels.d'],work)
@@ -93,7 +104,7 @@ for compiler in args.compiler or ['dmd','ldc2']:
         for name in ['verify','runtime','metrics']:
             binary=work/name
             run([*base,'-of='+str(binary),root/'benchmarks'/(name+'.d'),
-                 root/'source/error_d.d',obj],work)
+                 source_file,obj],work)
             arguments=[str(args.samples),str(args.target_ms),str(args.seed),str(args.size)] if name=='runtime' else []
             output=run(['taskset','-c',str(cpu),binary,*arguments],work,timeout=300)
             rows=[json.loads(line) for line in output.splitlines()]

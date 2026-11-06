@@ -5,7 +5,11 @@ import core.attribute : mustuse;
 import core.lifetime : move;
 import core.stdc.stdlib : abort;
 import std.sumtype : SumType, match, get;
-import std.traits : isCopyable, CopyTypeQualifiers, hasElaborateDestructor, hasElaborateMove, functionAttributes, FunctionAttribute;
+import std.meta : allSatisfy;
+import std.traits : CopyTypeQualifiers, FieldTypeTuple, FunctionAttribute,
+    OriginalType, functionAttributes, hasElaborateCopyConstructor,
+    hasElaborateDestructor, hasElaborateMove, hasIndirections, hasNested,
+    isAssignable, isCopyable, isFloatingPoint, isIntegral, isSomeChar;
 
 enum ResultState { empty, success, failure }
 
@@ -46,9 +50,39 @@ private template referenceCopy(T)
     else enum referenceCopy = false;
 }
 
-private extern(C) alias Abort = void function() pure nothrow @nogc;
+private template trivialTransfer(T)
+{
+    enum trivialTransfer = !hasElaborateCopyConstructor!T && !hasElaborateDestructor!T && !hasElaborateMove!T;
+}
 
-private void badAccess() @trusted pure nothrow @nogc
+private template plainPayload(T)
+{
+    static if (is(T == void)) enum plainPayload = true;
+    else static if (is(T == const) || is(T == immutable) || is(T == shared) || is(T == inout))
+        enum plainPayload = false;
+    else static if (is(T == enum)) enum plainPayload = plainPayload!(OriginalType!T);
+    else static if (__traits(isStaticArray, T))
+        enum plainPayload = plainPayload!(typeof(T.init[0]));
+    else static if (is(T == struct))
+        enum plainPayload = trivialTransfer!T && !hasIndirections!T && !hasNested!T
+            && !__traits(hasMember, T, "opAssign") && !__traits(getAliasThis, T).length
+            && isAssignable!T && allSatisfy!(error_d.plainPayload, FieldTypeTuple!T);
+    else enum plainPayload = isIntegral!T || isFloatingPoint!T || isSomeChar!T;
+}
+
+// The specialization contains no pointers, user copy/destruction/move hooks or
+// overloaded assignment. Inactive bytes may be unspecified; only the checked
+// active branch is read. All resource/reference-bearing types stay on SumType.
+private struct PlainStorage(Good, Bad)
+{
+    private union Data { Good good; Bad bad; }
+    private Data data = Data.init;
+    private ubyte tag;
+}
+
+private extern(C) alias Abort = noreturn function() pure nothrow @nogc;
+
+private noreturn badAccess() @trusted pure nothrow @nogc
 {
     // abort does not inspect memory, allocate, return or expose aliases.
     auto terminate = cast(Abort) &abort;
@@ -70,7 +104,14 @@ if ((is(T == void) || storable!T) && storable!E)
     static if (is(T == void)) private alias Good = VoidSuccess;
     else private alias Good = Success!T;
     private alias Bad = Failure!E;
-    private alias Storage = SumType!(Empty, Good, Bad);
+    private enum usePlain = plainPayload!T && plainPayload!E;
+    static if (usePlain)
+    {
+        private alias Storage = PlainStorage!(Good, Bad);
+        static assert(!hasIndirections!Storage && trivialTransfer!Storage);
+    }
+    else
+        private alias Storage = SumType!(Empty, Good, Bad);
     private Storage storage = Storage.init;
 
     // Only variants with destructible payloads need a lifetime flag. POD size
@@ -88,6 +129,7 @@ if ((is(T == void) || storable!T) && storable!E)
         }
     }
 
+    pragma(inline, true)
     private void requireLive() const @safe pure nothrow @nogc
     {
         static if (hasElaborateDestructor!Storage)
@@ -103,73 +145,147 @@ if ((is(T == void) || storable!T) && storable!E)
         return source.match!((ref branch) => Out(branch));
     }
 
-    static if (isCopyable!Storage)
-        this(ref Result other)
-        {
-            other.requireLive();
-            static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
-            storage = copyStorage(other.storage);
-        }
-    else
-        @disable this(ref Result other);
+    static if (!usePlain)
+    {
+        static if (isCopyable!Storage)
+            this(ref Result other)
+            {
+                other.requireLive();
+                static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
+                storage = copyStorage(other.storage);
+            }
+        else
+            @disable this(ref Result other);
 
-    static if (isCopyable!(const Storage))
-        this(ref const Result other) const
-        {
-            other.requireLive();
-            static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
-            storage = copyStorage(other.storage);
-        }
-    else
-        @disable this(ref const Result other) const;
+        static if (isCopyable!(const Storage))
+            this(ref const Result other) const
+            {
+                other.requireLive();
+                static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
+                storage = copyStorage(other.storage);
+            }
+        else
+            @disable this(ref const Result other) const;
 
-    static if (isCopyable!(immutable Storage))
-        this(ref immutable Result other) immutable
-        {
-            other.requireLive();
-            static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
-            storage = copyStorage(other.storage);
-        }
-    else
-        @disable this(ref immutable Result other) immutable;
+        static if (isCopyable!(immutable Storage))
+            this(ref immutable Result other) immutable
+            {
+                other.requireLive();
+                static if (referenceCopy!T || referenceCopy!E) cast(void) () @system {}();
+                storage = copyStorage(other.storage);
+            }
+        else
+            @disable this(ref immutable Result other) immutable;
+    }
 
-    private this(Storage payload) { storage = move(payload); }
+    pragma(inline, true)
+    private this(Storage payload)
+    {
+        storage = move(payload);
+    }
 
     static if (is(T == void))
     {
-        static Result success()() { return Result(Storage(Good())); }
+        pragma(inline, true)
+        static Result success()()
+        {
+            static if (usePlain) return plainSuccess();
+            else return Result(Storage(Good()));
+        }
     }
     else
     {
+        pragma(inline, true)
         static Result success()(T value)
         {
-            static if (is(T == const) || is(T == immutable))
+            static if (usePlain) return plainSuccess(value);
+            else static if (is(T == const) || is(T == immutable))
                 return Result(Storage(Good(value)));
             else return Result(Storage(Good(move(value))));
         }
     }
+    pragma(inline, true)
     static Result failure()(E error)
     {
-        static if (is(E == const) || is(E == immutable))
+        static if (usePlain) return plainFailure(error);
+        else static if (is(E == const) || is(E == immutable))
             return Result(Storage(Bad(error)));
         else return Result(Storage(Bad(move(error))));
     }
 
+    static if (usePlain)
+    {
+        // Only pointer-free, hook-free, assignable values reach these helpers.
+        // NRVO constructs the active member directly, without clearing or copying
+        // a full inactive union. There are no uninitialized typed reference slots.
+        static if (is(T == void))
+        {
+            pragma(inline, true)
+            private static Result plainSuccess() @trusted
+            {
+                Result result = void;
+                result.storage.tag = 1;
+                return result;
+            }
+        }
+        else
+        {
+            pragma(inline, true)
+            private static Result plainSuccess(T value) @trusted
+            {
+                Result result = void;
+                result.storage.data.good.payload = value;
+                result.storage.tag = 1;
+                return result;
+            }
+        }
+        pragma(inline, true)
+        private static Result plainFailure(E error) @trusted
+        {
+            Result result = void;
+            result.storage.data.bad.payload = error;
+            result.storage.tag = 2;
+            return result;
+        }
+        static if (!is(T == void))
+        {
+            pragma(inline, true)
+            private auto plainValue(this Self)() @trusted pure nothrow @nogc
+            {
+                if (storage.tag != 1) badAccess();
+                return storage.data.good.payload;
+            }
+        }
+        pragma(inline, true)
+        private auto plainError(this Self)() @trusted pure nothrow @nogc
+        {
+            if (storage.tag != 2) badAccess();
+            return storage.data.bad.payload;
+        }
+
+    }
+
+    pragma(inline, true)
     ResultState state() const @safe pure nothrow @nogc
     {
         static if (hasElaborateDestructor!Storage)
             if (destroying) return ResultState.empty;
-        return storage.match!((ref const x) {
+        static if (usePlain) return cast(ResultState) storage.tag;
+        else return storage.match!((ref const x) {
             static if (is(typeof(x) == const(Empty))) return ResultState.empty;
             else static if (is(typeof(x) == const(Good))) return ResultState.success;
             else return ResultState.failure;
         });
     }
+    pragma(inline, true)
     bool hasValue() const @safe pure nothrow @nogc { return state == ResultState.success; }
+    pragma(inline, true)
     bool hasError() const @safe pure nothrow @nogc { return state == ResultState.failure; }
+    pragma(inline, true)
     bool isEmpty() const @safe pure nothrow @nogc { return state == ResultState.empty; }
 
     /// Non-consuming copy. Const payload indirections stay const.
+    pragma(inline, true)
     auto value(this Self)()
     {
         requireLive();
@@ -177,6 +293,7 @@ if ((is(T == void) || storable!T) && storable!E)
         {
             if (!hasValue) badAccess();
         }
+        else static if (usePlain) return this.plainValue();
         else
         {
             alias QualifiedGood = CopyTypeQualifiers!(Self, Good);
@@ -187,22 +304,28 @@ if ((is(T == void) || storable!T) && storable!E)
             return storage.get!QualifiedGood.payload;
         }
     }
+    pragma(inline, true)
     auto error(this Self)()
     {
         requireLive();
-        alias QualifiedBad = CopyTypeQualifiers!(Self, Bad);
-        alias V = typeof(storage.get!QualifiedBad.payload);
-        static if (referenceCopy!V) cast(void) () @system {}();
-        static assert(isCopyable!V, "error requires a copyable payload; use takeError");
-        if (!hasError) badAccess();
-        return storage.get!QualifiedBad.payload;
+        static if (usePlain) return this.plainError();
+        else
+        {
+            alias QualifiedBad = CopyTypeQualifiers!(Self, Bad);
+            alias V = typeof(storage.get!QualifiedBad.payload);
+            static if (referenceCopy!V) cast(void) () @system {}();
+            static assert(isCopyable!V, "error requires a copyable payload; use takeError");
+            if (!hasError) badAccess();
+            return storage.get!QualifiedBad.payload;
+        }
     }
 
     /// Prepare rhs before touching this; payload opAssign is never called.
     void opAssign(Result rhs)
     {
         requireLive();
-        replace(rhs.storage);
+        static if (usePlain) storage = rhs.storage;
+        else replace(rhs.storage);
     }
     private void replace(ref Storage prepared) @trusted
     {
@@ -222,7 +345,17 @@ if ((is(T == void) || storable!T) && storable!E)
     {
         requireLive();
         if (!hasValue) badAccess();
-        static if (is(T == void))
+        static if (usePlain)
+        {
+            static if (is(T == void)) storage.tag = 0;
+            else
+            {
+                auto value = this.plainValue();
+                storage.tag = 0;
+                return value;
+            }
+        }
+        else static if (is(T == void))
         {
             auto empty = Storage.init;
             replace(empty);
@@ -238,9 +371,18 @@ if ((is(T == void) || storable!T) && storable!E)
     {
         requireLive();
         if (!hasError) badAccess();
-        auto owned = takeStorage();
-        static if (is(E == const) || is(E == immutable)) return owned.get!Bad.payload;
-        else return move(owned.get!Bad.payload);
+        static if (usePlain)
+        {
+            auto error = this.plainError();
+            storage.tag = 0;
+            return error;
+        }
+        else
+        {
+            auto owned = takeStorage();
+            static if (is(E == const) || is(E == immutable)) return owned.get!Bad.payload;
+            else return move(owned.get!Bad.payload);
+        }
     }
     private Storage takeStorage() @trusted
     {
@@ -253,6 +395,7 @@ if ((is(T == void) || storable!T) && storable!E)
     }
 
     /// Exhaustive copy-based match; callbacks never borrow private storage.
+    pragma(inline, true)
     auto match(SuccessFn, FailureFn, EmptyFn, this Self)(scope SuccessFn onSuccess, scope FailureFn onFailure, scope EmptyFn onEmpty)
     {
         alias R = typeof(onEmpty());
@@ -263,7 +406,13 @@ if ((is(T == void) || storable!T) && storable!E)
         static assert(!(functionAttributes!EmptyFn & FunctionAttribute.ref_), "match callbacks must not return ref");
         static assert(!(functionAttributes!SuccessFn & FunctionAttribute.ref_), "match callbacks must not return ref");
         static assert(!(functionAttributes!FailureFn & FunctionAttribute.ref_), "match callbacks must not return ref");
-        final switch (state)
+        static if (usePlain)
+        {
+            static if (is(T == void))
+                return hasValue ? onSuccess() : hasError ? onFailure(error()) : onEmpty();
+            else return hasValue ? onSuccess(value()) : hasError ? onFailure(error()) : onEmpty();
+        }
+        else final switch (state)
         {
             case ResultState.empty: return onEmpty();
             case ResultState.failure: return onFailure(error());
@@ -274,28 +423,39 @@ if ((is(T == void) || storable!T) && storable!E)
     }
 
     /// Transform a copied success value, preserving failure and empty.
+    pragma(inline, true)
     auto map(Fn, this Self)(scope Fn transform)
     {
         static assert(!(functionAttributes!Fn & FunctionAttribute.ref_), "map callback must not return ref");
         static if (is(T == void)) alias U = typeof(transform());
         else alias U = typeof(transform(value()));
         alias Out = Result!(U, typeof(error()));
-        if (hasError) return Out.failure(error());
-        if (isEmpty) return Out.init;
-        static if (is(U == void))
+        static if (usePlain && Out.usePlain && !is(U == void))
         {
-            static if (is(T == void)) transform();
-            else transform(value());
-            return Out.success();
+            static if (is(T == void))
+                return hasValue ? Out.success(transform()) : hasError ? Out.failure(error()) : Out.init;
+            else return hasValue ? Out.success(transform(value())) : hasError ? Out.failure(error()) : Out.init;
         }
         else
         {
-            static if (is(T == void)) return Out.success(transform());
-            else return Out.success(transform(value()));
+            if (hasError) return Out.failure(error());
+            if (isEmpty) return Out.init;
+            static if (is(U == void))
+            {
+                static if (is(T == void)) transform();
+                else transform(value());
+                return Out.success();
+            }
+            else
+            {
+                static if (is(T == void)) return Out.success(transform());
+                else return Out.success(transform(value()));
+            }
         }
     }
 
     /// Explicitly translate a copied error, preserving success and empty.
+    pragma(inline, true)
     auto mapError(Fn, this Self)(scope Fn transform)
     {
         static assert(!(functionAttributes!Fn & FunctionAttribute.ref_), "mapError callback must not return ref");
@@ -303,13 +463,23 @@ if ((is(T == void) || storable!T) && storable!E)
         static if (is(T == void)) alias V = void;
         else alias V = typeof(value());
         alias Out = Result!(V, F);
-        if (hasError) return Out.failure(transform(error()));
-        if (isEmpty) return Out.init;
-        static if (is(T == void)) return Out.success();
-        else return Out.success(value());
+        static if (usePlain && Out.usePlain)
+        {
+            static if (is(T == void))
+                return hasError ? Out.failure(transform(error())) : hasValue ? Out.success() : Out.init;
+            else return hasError ? Out.failure(transform(error())) : hasValue ? Out.success(value()) : Out.init;
+        }
+        else
+        {
+            if (hasError) return Out.failure(transform(error()));
+            if (isEmpty) return Out.init;
+            static if (is(T == void)) return Out.success();
+            else return Out.success(value());
+        }
     }
 
     /// Chain a copied success into another Result with the same error type.
+    pragma(inline, true)
     auto andThen(Fn, this Self)(scope Fn next)
     {
         static assert(!(functionAttributes!Fn & FunctionAttribute.ref_), "andThen callback must not return ref");
@@ -318,10 +488,19 @@ if ((is(T == void) || storable!T) && storable!E)
         static assert(IsResult!Out, "andThen callback must return Result");
         static assert(is(Out.ErrorType == typeof(error())),
                       "andThen requires the same error type; use mapError explicitly");
-        if (hasError) return Out.failure(error());
-        if (isEmpty) return Out.init;
-        static if (is(T == void)) return next();
-        else return next(value());
+        static if (usePlain && Out.usePlain)
+        {
+            static if (is(T == void))
+                return hasValue ? next() : hasError ? Out.failure(error()) : Out.init;
+            else return hasValue ? next(value()) : hasError ? Out.failure(error()) : Out.init;
+        }
+        else
+        {
+            if (hasError) return Out.failure(error());
+            if (isEmpty) return Out.init;
+            static if (is(T == void)) return next();
+            else return next(value());
+        }
     }
 
 }

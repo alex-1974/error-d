@@ -32,7 +32,7 @@ for compiler in args.compiler or ['dmd', 'ldc2']:
                 run([*flags, '-of=' + binary, str(fixture), source], directory)
                 if fixture.stem == 'misuse':
                     for mode in ['empty-value', 'error-value', 'success-error', 'empty-error',
-                                 'take-value', 'take-error', 'void-value', 'void-take']:
+                                 'take-value', 'take-error', 'void-value', 'void-take', 'slice-empty', 'slice-error']:
                         outcome = run([binary, mode], directory, success=False)
                         if outcome.returncode != -signal.SIGABRT:
                             raise RuntimeError(f'{compiler} {mode}: expected SIGABRT, got {outcome.returncode}')

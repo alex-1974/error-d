@@ -11,6 +11,8 @@ void main(string[] args) {
         case "take-error": cast(void) R.success(1).takeError(); break;
         case "void-value": Result!(void,int).init.value(); break;
         case "void-take": Result!(void,int).failure(1).takeValue(); break;
+        case "slice-empty": cast(void) Result!(int[],int).init.value(); break;
+        case "slice-error": cast(void) Result!(int[],int).success(new int[1]).error(); break;
         default: throw new Exception("unknown test");
     }
 }
